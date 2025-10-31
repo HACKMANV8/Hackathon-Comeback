@@ -1,6 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 export default function Header() {
   return (
@@ -36,15 +43,34 @@ export default function Header() {
           >
             Playground
           </a>
-          <button className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/50">
-            Publish Server
-          </button>
-          <a
-            href="#"
-            className="text-gray-300 hover:text-white transition-colors"
-          >
-            Login
-          </a>
+          <SignedIn>
+            <button className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/50">
+              Publish Server
+            </button>
+          </SignedIn>
+          
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="text-gray-300 hover:text-white transition-colors">
+                Sign In
+              </button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <button className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/50">
+                Sign Up
+              </button>
+            </SignUpButton>
+          </SignedOut>
+          
+          <SignedIn>
+            <UserButton 
+              appearance={{
+                elements: {
+                  avatarBox: "w-10 h-10"
+                }
+              }}
+            />
+          </SignedIn>
         </motion.nav>
       </div>
     </header>
