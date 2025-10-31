@@ -79,13 +79,13 @@ async def init_mcp(request: Request):
 
 @router.get("/pull/{server_name}")
 async def pull_server(server_name: str):
-    temp_dir = None
+    clone_dir = None
     
     try:
         try:
             response = s3_client.get_object(Bucket=S3_BUCKET, Key=S3_KEY)
             file_data = json.loads(response['Body'].read().decode('utf-8'))
-        except s3_client.exceptions.NoSuchKey:
+        except s3_client.exceptiosns.NoSuchKey:
             raise HTTPException(status_code=404, detail="MCP servers database not found")
         
         servers = file_data.get("mcphub-servers", [])
@@ -94,86 +94,52 @@ async def pull_server(server_name: str):
         if not server:
             raise HTTPException(status_code=404, detail=f"Server '{server_name}' not found")
         
-        lang = server.get("lang")
-        entrypoint = server.get("entrypoint")
-        repository = server.get("repository", {})
-        repo_url = repository.get("url") if isinstance(repository, dict) else repository
+        repository = server.get("repository")
         
-        if not all([lang, entrypoint, repo_url]):
+        # Handle different repository formats
+        if repository is None:
             raise HTTPException(
                 status_code=400, 
-                detail="Server configuration incomplete (missing lang, entrypoint, or repository)"
+                detail="Server configuration incomplete (missing repository)"
             )
         
-        temp_dir = tempfile.mkdtemp(prefix=f"mcp_{server_name}_")
+        if isinstance(repository, dict):
+            repo_url = repository.get("url")
+        elif isinstance(repository, str):
+            repo_url = repository
+        else:
+            repo_url = None
+        
+        if not repo_url or not isinstance(repo_url, str):
+            raise HTTPException(
+                status_code=400, 
+                detail="Server configuration incomplete (invalid or missing repository URL)"
+            )
+        
+        # Create a permanent directory for cloned repositories
+        base_clone_dir = os.path.join(os.getcwd(), "cloned_repositories")
+        os.makedirs(base_clone_dir, exist_ok=True)
+        
+        clone_dir = os.path.join(base_clone_dir, server_name)
+        
+        # If directory already exists, remove it first to get a fresh clone
+        if os.path.exists(clone_dir):
+            shutil.rmtree(clone_dir)
         
         try:
-            Repo.clone_from(repo_url, temp_dir)
+            Repo.clone_from(repo_url, clone_dir)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to clone repository: {str(e)}")
         
-        entrypoint_path = os.path.join(temp_dir, entrypoint)
-        
-        if not os.path.exists(entrypoint_path):
-            raise HTTPException(
-                status_code=500, 
-                detail=f"Entrypoint '{entrypoint}' not found in repository"
-            )
-        
-        if lang.lower() == "python":
-            cmd = ["python3", entrypoint_path]
-        elif lang.lower() in ["javascript", "typescript", "node", "nodejs"]:
-            cmd = ["node", entrypoint_path]
-        else:
-            raise HTTPException(
-                status_code=400, 
-                detail=f"Unsupported language: {lang}"
-            )
-        
-        try:
-            result = subprocess.run(
-                cmd,
-                cwd=temp_dir,
-                capture_output=True,
-                text=True,
-                timeout=30
-            )
-            
-            if result.returncode != 0:
-                return JSONResponse(
-                    content={
-                        "error": "Execution failed",
-                        "stderr": result.stderr,
-                        "stdout": result.stdout,
-                        "return_code": result.returncode
-                    },
-                    status_code=500
-                )
-            
-            try:
-                output_json = json.loads(result.stdout)
-                return JSONResponse(content=output_json)
-            except json.JSONDecodeError:
-                response_data = {
-                    "output": result.stdout.strip()
-                }
-                if result.stderr and result.stderr.strip():
-                    response_data["stderr"] = result.stderr.strip()
-                return JSONResponse(content=response_data)
-                
-        except subprocess.TimeoutExpired:
-            raise HTTPException(status_code=408, detail="Execution timeout (30s)")
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Execution error: {str(e)}")
+        return JSONResponse(content={
+            "message": "Cloned successfully",
+            "server_name": server_name,
+            "clone_path": clone_dir,
+            "repository_url": repo_url
+        })
             
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
-    finally:
-        if temp_dir and os.path.exists(temp_dir):
-            try:
-                shutil.rmtree(temp_dir)
-            except Exception as e:
-                print(f"Warning: Failed to cleanup temp directory {temp_dir}: {e}")
 
