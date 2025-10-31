@@ -11,8 +11,8 @@ import {
 
 export default function Header() {
   return (
-    <header className="fixed top-0 w-full z-50 bg-transparent">
-      <div className="max-w-7xl mx-auto px-8 py-6 flex items-center justify-between">
+    <header className="fixed top-0 w-full z-50 backdrop-blur-md bg-black/20 border-b border-white/5">
+      <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
         {/* Logo - Minimalist */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
