@@ -2,7 +2,6 @@
 import ExploreSection from "@/components/explore-section";
 import Header from "@/components/header";
 import HeroSection from "@/components/hero-section";
-import MemorySection from "@/components/memory-section";
 
 export default function Home() {
   return (
@@ -16,7 +15,6 @@ export default function Home() {
       <main className="pt-20">
         <HeroSection />
         <ExploreSection />
-        <MemorySection />
       </main>
     </div>
   );

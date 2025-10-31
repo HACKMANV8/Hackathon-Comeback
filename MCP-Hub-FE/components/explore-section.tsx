@@ -94,7 +94,7 @@ export default function ExploreSection() {
             </span>
           </div>
           <a
-            href="#"
+            href="/explore"
             className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1"
           >
             View all <span>→</span>
