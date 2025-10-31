@@ -1,5 +1,11 @@
+"use client";
+
 import Header from "@/components/header";
 import ServerDetail from "@/components/server-detail";
+import PremiumPaywall from "@/components/premium-paywall";
+import { useUser } from "@clerk/nextjs";
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 
 const serverData: Record<number, any> = {
   1: {
@@ -8,6 +14,7 @@ const serverData: Record<number, any> = {
     handle: "@LinkupPlatform/linkup-mcp-server",
     lastDeployed: "4 days ago",
     icon: "🔗",
+    isPremium: false,
     about:
       "Search the web in real time to get trustworthy, source-backed answers. Find the latest news and comprehensive results from the most relevant sources. Use natural language queries to quickly gather facts, citations, and context.",
     tools: [
@@ -37,6 +44,8 @@ const serverData: Record<number, any> = {
     handle: "exa",
     lastDeployed: "2 days ago",
     icon: "🔍",
+    isPremium: true,
+    price: 49,
     about:
       "Fast, intelligent web search and web crawling. New mcp tool! Exa-code is a context tool for advanced search capabilities and AI-powered content discovery.",
     tools: [
@@ -66,6 +75,8 @@ const serverData: Record<number, any> = {
     handle: "supabase",
     lastDeployed: "1 day ago",
     icon: "🟢",
+    isPremium: true,
+    price: 29,
     about:
       "Search the Supabase docs for up-to-date guidance and troubleshoot errors quickly. Access comprehensive documentation for database, authentication, and real-time features.",
     tools: [
@@ -95,6 +106,7 @@ const serverData: Record<number, any> = {
     handle: "@browserbasehq/mcp-browserbase",
     lastDeployed: "3 days ago",
     icon: "🌐",
+    isPremium: false,
     about:
       "Provides cloud browser automation capabilities using Stagehand and modern web scraping techniques. Automate complex browser interactions, extract data, and test web applications.",
     tools: [
@@ -467,10 +479,38 @@ const serverData: Record<number, any> = {
   },
 };
 
-export default async function ServerPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const serverId = Number.parseInt(id);
+export default function ServerPage() {
+  const params = useParams();
+  const serverId = Number.parseInt(params.id as string);
   const server = serverData[serverId];
+  const { user } = useUser();
+  const [hasAccess, setHasAccess] = useState(false);
+
+  // Check if user has premium access
+  useEffect(() => {
+    if (server && server.isPremium && user) {
+      // Check if user has purchased this server
+      // In production, this would check your database
+      const purchasedServers = localStorage.getItem(`purchased_servers_${user.id}`);
+      if (purchasedServers) {
+        const purchased = JSON.parse(purchasedServers);
+        setHasAccess(purchased.includes(serverId));
+      }
+    } else if (server && !server.isPremium) {
+      setHasAccess(true);
+    }
+  }, [server, user, serverId]);
+
+  const handlePaymentSuccess = () => {
+    if (user) {
+      // Store purchase in localStorage (in production, use a real database)
+      const purchasedServers = localStorage.getItem(`purchased_servers_${user.id}`);
+      const purchased = purchasedServers ? JSON.parse(purchasedServers) : [];
+      purchased.push(serverId);
+      localStorage.setItem(`purchased_servers_${user.id}`, JSON.stringify(purchased));
+      setHasAccess(true);
+    }
+  };
 
   if (!server) {
     return (
@@ -489,7 +529,19 @@ export default async function ServerPage({ params }: { params: Promise<{ id: str
     >
       <Header />
       <main className="pt-20">
-        <ServerDetail server={server} />
+        {server.isPremium && !hasAccess ? (
+          <PremiumPaywall
+            server={{
+              id: server.id,
+              name: server.name,
+              icon: server.icon,
+              price: server.price
+            }}
+            onPurchase={handlePaymentSuccess}
+          />
+        ) : (
+          <ServerDetail server={server} />
+        )}
       </main>
     </div>
   );
