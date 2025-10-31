@@ -30,6 +30,63 @@ async def root():
     return JSONResponse(content={"status": "running", "message": "MCP-Hub Server is running"})
 
 
+@router.get("/servers/{server_name}")
+async def get_server_info(server_name: str):
+    """Get detailed information about a specific MCP server"""
+    try:
+        try:
+            response = s3_client.get_object(Bucket=S3_BUCKET, Key=S3_KEY)
+            file_data = json.loads(response['Body'].read().decode('utf-8'))
+        except s3_client.exceptions.NoSuchKey:
+            raise HTTPException(status_code=404, detail="MCP servers database not found")
+        
+        servers = file_data.get("mcphub-servers", [])
+        server = next((s for s in servers if s["name"] == server_name), None)
+        
+        if not server:
+            raise HTTPException(status_code=404, detail=f"Server '{server_name}' not found")
+        
+        return JSONResponse(content=server)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching server info: {str(e)}")
+
+
+@router.get("/servers")
+async def list_servers():
+    """List all MCP servers from S3 bucket"""
+    try:
+        try:
+            response = s3_client.get_object(Bucket=S3_BUCKET, Key=S3_KEY)
+            file_data = json.loads(response['Body'].read().decode('utf-8'))
+        except s3_client.exceptions.NoSuchKey:
+            return JSONResponse(content={"mcphub-servers": []})
+        
+        servers = file_data.get("mcphub-servers", [])
+        
+        # Return summary info for each server
+        server_list = []
+        for server in servers:
+            server_list.append({
+                "name": server.get("name"),
+                "version": server.get("version"),
+                "description": server.get("description"),
+                "author": server.get("author"),
+                "lang": server.get("lang"),
+                "license": server.get("license")
+            })
+        
+        return JSONResponse(content={
+            "total": len(server_list),
+            "servers": server_list
+        })
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching servers: {str(e)}")
+
+
 @router.post("/init")
 async def init_mcp(request: Request):
     data = await request.json()
@@ -85,7 +142,7 @@ async def pull_server(server_name: str):
         try:
             response = s3_client.get_object(Bucket=S3_BUCKET, Key=S3_KEY)
             file_data = json.loads(response['Body'].read().decode('utf-8'))
-        except s3_client.exceptiosns.NoSuchKey:
+        except s3_client.exceptions.NoSuchKey:
             raise HTTPException(status_code=404, detail="MCP servers database not found")
         
         servers = file_data.get("mcphub-servers", [])
@@ -142,4 +199,103 @@ async def pull_server(server_name: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
+
+@router.get("/run/{server_name}")
+async def run_server(server_name: str):
+    try:
+        # Fetch server configuration from S3
+        try:
+            response = s3_client.get_object(Bucket=S3_BUCKET, Key=S3_KEY)
+            file_data = json.loads(response['Body'].read().decode('utf-8'))
+        except s3_client.exceptions.NoSuchKey:
+            raise HTTPException(status_code=404, detail="MCP servers database not found")
+        
+        servers = file_data.get("mcphub-servers", [])
+        server = next((s for s in servers if s["name"] == server_name), None)
+        
+        if not server:
+            raise HTTPException(status_code=404, detail=f"Server '{server_name}' not found")
+        
+        lang = server.get("lang")
+        entrypoint = server.get("entrypoint")
+        
+        if not all([lang, entrypoint]):
+            raise HTTPException(
+                status_code=400, 
+                detail="Server configuration incomplete (missing lang or entrypoint)"
+            )
+        
+        # Check if the cloned repository exists
+        base_clone_dir = os.path.join(os.getcwd(), "cloned_repositories")
+        clone_dir = os.path.join(base_clone_dir, server_name)
+        
+        if not os.path.exists(clone_dir):
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Repository not cloned yet. Please call /pull/{server_name} first"
+            )
+        
+        entrypoint_path = os.path.join(clone_dir, entrypoint)
+        
+        if not os.path.exists(entrypoint_path):
+            raise HTTPException(
+                status_code=500, 
+                detail=f"Entrypoint '{entrypoint}' not found in cloned repository"
+            )
+        
+        # Determine the command based on language
+        if lang.lower() == "python":
+            cmd = ["python3", entrypoint_path]
+        elif lang.lower() in ["javascript", "typescript", "node", "nodejs"]:
+            cmd = ["node", entrypoint_path]
+        else:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Unsupported language: {lang}"
+            )
+        
+        # Execute the entrypoint
+        try:
+            result = subprocess.run(
+                cmd,
+                cwd=clone_dir,
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            
+            if result.returncode != 0:
+                return JSONResponse(
+                    content={
+                        "error": "Execution failed",
+                        "stderr": result.stderr,
+                        "stdout": result.stdout,
+                        "return_code": result.returncode
+                    },
+                    status_code=500
+                )
+            
+            # Try to parse as JSON, otherwise return as plain text
+            try:
+                output_json = json.loads(result.stdout)
+                return JSONResponse(content=output_json)
+            except json.JSONDecodeError:
+                response_data = {
+                    "output": result.stdout.strip()
+                }
+                if result.stderr and result.stderr.strip():
+                    response_data["stderr"] = result.stderr.strip()
+                return JSONResponse(content=response_data)
+                
+        except subprocess.TimeoutExpired:
+            raise HTTPException(status_code=408, detail="Execution timeout (30s)")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Execution error: {str(e)}")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
 
