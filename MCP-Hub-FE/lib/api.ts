@@ -65,7 +65,9 @@ export async function fetchServers(): Promise<ServerResponse[]> {
   if (!response.ok) {
     throw new Error("Failed to fetch servers");
   }
-  return response.json();
+  const data = await response.json();
+  // API returns {total: number, servers: [...]}
+  return data.servers || [];
 }
 
 export async function fetchServerByName(

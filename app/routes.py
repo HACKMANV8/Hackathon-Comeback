@@ -30,7 +30,7 @@ async def get_server_info(server_name: str):
         except s3_client.exceptions.NoSuchKey:
             raise HTTPException(status_code=404, detail="MCP servers database not found")
         
-        servers = file_data.get("mcphub-servers", [])
+        servers = file_data.get("servers", [])
         server = next((s for s in servers if s["name"] == server_name), None)
         
         if not server:
@@ -52,21 +52,33 @@ async def list_servers():
             response = s3_client.get_object(Bucket=S3_BUCKET, Key=S3_KEY)
             file_data = json.loads(response['Body'].read().decode('utf-8'))
         except s3_client.exceptions.NoSuchKey:
-            return JSONResponse(content={"mcphub-servers": []})
+            return JSONResponse(content={"total": 0, "servers": []})
         
-        servers = file_data.get("mcphub-servers", [])
+        servers = file_data.get("servers", [])
         
-        # Return summary info for each server
+        # Return full server data including pricing
         server_list = []
         for server in servers:
-            server_list.append({
+            server_info = {
                 "name": server.get("name"),
                 "version": server.get("version"),
                 "description": server.get("description"),
                 "author": server.get("author"),
                 "lang": server.get("lang"),
-                "license": server.get("license")
-            })
+                "license": server.get("license"),
+                "entrypoint": server.get("entrypoint"),
+                "repository": server.get("repository"),
+            }
+            
+            # Add pricing if exists
+            if "pricing" in server and server["pricing"]:
+                server_info["pricing"] = server["pricing"]
+            
+            # Add sonarqube if exists
+            if "sonarqube" in server and server["sonarqube"]:
+                server_info["sonarqube"] = server["sonarqube"]
+            
+            server_list.append(server_info)
         
         return JSONResponse(content={
             "total": len(server_list),
