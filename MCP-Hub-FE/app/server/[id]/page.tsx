@@ -37,6 +37,70 @@ const serverData: Record<number, any> = {
       typescript: [],
       python: ["Poke", "Claude Desktop", "Claude Code", "Cursor"],
     },
+    qualityScore: 85,
+    monthlyToolCalls: 124567,
+    deployedFrom: {
+      branch: "main",
+      commit: "a3b2c1d",
+    },
+    uptime: 99.2,
+    latency: {
+      p95: 2.45,
+    },
+    license: "MIT",
+    isLocal: false,
+    publishedDate: "10/15/2024",
+    sourceCode: {
+      platform: "GitHub",
+      url: "https://github.com/LinkupPlatform/linkup-mcp-server",
+      repo: "LinkupPlatform/linkup-mcp-server",
+    },
+    homepage: {
+      url: "https://linkup.so",
+      domain: "linkup.so",
+    },
+    security: {
+      summary: {
+        total_issues: 2,
+        bugs: 0,
+        vulnerabilities: 0,
+        code_smells: 2,
+        security_hotspots: 0,
+      },
+      metrics: {
+        reliability_rating: "1.0",
+        security_rating: "1.0",
+        sqale_rating: "1.0",
+        complexity: "8",
+        coverage: "85.0",
+      },
+      issues: {
+        by_severity: {
+          critical: 0,
+          major: 2,
+          minor: 0,
+        },
+        details: {
+          CRITICAL: [],
+          MAJOR: [
+            {
+              message: "Remove this unused import.",
+              file: "search.py",
+              line: 12,
+              rule: "python:S1128",
+            },
+            {
+              message:
+                "Refactor this function to reduce its complexity from 15 to 14.",
+              file: "api.py",
+              line: 89,
+              rule: "python:S3776",
+            },
+          ],
+        },
+      },
+      security_hotspots: [],
+    },
   },
   2: {
     id: 2,
@@ -67,6 +131,94 @@ const serverData: Record<number, any> = {
       json: [],
       typescript: ["Claude Code"],
       python: ["Claude Desktop", "Cursor"],
+    },
+    qualityScore: 73,
+    monthlyToolCalls: 422795,
+    deployedFrom: {
+      branch: "main",
+      commit: "07aed2c",
+    },
+    uptime: 87.6,
+    latency: {
+      p95: 6.05,
+    },
+    license: "MIT",
+    isLocal: false,
+    publishedDate: "12/13/2024",
+    sourceCode: {
+      platform: "GitHub",
+      url: "https://github.com/exa-labs/exa-mcp-server",
+      repo: "exa-labs/exa-mcp-server",
+    },
+    homepage: {
+      url: "https://exa.ai",
+      domain: "exa.ai",
+    },
+    security: {
+      summary: {
+        total_issues: 6,
+        bugs: 0,
+        vulnerabilities: 0,
+        code_smells: 6,
+        security_hotspots: 1,
+      },
+      metrics: {
+        reliability_rating: "1.0",
+        security_rating: "1.0",
+        sqale_rating: "1.0",
+        complexity: "16",
+        coverage: "0.0",
+      },
+      issues: {
+        by_severity: {
+          critical: 2,
+          major: 3,
+          minor: 1,
+        },
+        details: {
+          CRITICAL: [
+            {
+              message:
+                'Define a constant instead of duplicating this literal "<Button-1>" 4 times.',
+              file: "gui.py",
+              line: 43,
+              rule: "python:S1192",
+            },
+            {
+              message:
+                'Define a constant instead of duplicating this literal "Custom.TButton" 4 times.',
+              file: "gui.py",
+              line: 47,
+              rule: "python:S1192",
+            },
+          ],
+          MAJOR: [
+            {
+              message: "Remove this commented out code.",
+              file: "engine.py",
+              line: 78,
+              rule: "python:S125",
+            },
+            {
+              message:
+                'Add a parameter to the parent lambda function and use variable "chrome_path" as its default value.',
+              file: "gui.py",
+              line: 134,
+              rule: "python:S1515",
+            },
+          ],
+        },
+      },
+      security_hotspots: [
+        {
+          message:
+            "Make sure that using this pseudorandom number generator is safe here.",
+          file: "engine.py",
+          line: 51,
+          status: "TO_REVIEW",
+          category: "weak-cryptography",
+        },
+      ],
     },
   },
   3: {
@@ -128,6 +280,28 @@ const serverData: Record<number, any> = {
       typescript: ["Claude Code"],
       python: ["Claude Desktop", "Cursor"],
     },
+    qualityScore: 78,
+    monthlyToolCalls: 89234,
+    deployedFrom: {
+      branch: "main",
+      commit: "f3e9d7a",
+    },
+    uptime: 95.4,
+    latency: {
+      p95: 4.12,
+    },
+    license: "Apache-2.0",
+    isLocal: false,
+    publishedDate: "11/08/2024",
+    sourceCode: {
+      platform: "GitHub",
+      url: "https://github.com/browserbasehq/mcp-browserbase",
+      repo: "browserbasehq/mcp-browserbase",
+    },
+    homepage: {
+      url: "https://browserbase.com",
+      domain: "browserbase.com",
+    },
   },
   5: {
     id: 5,
@@ -156,6 +330,28 @@ const serverData: Record<number, any> = {
       json: [],
       typescript: ["Claude Code"],
       python: ["Poke", "Claude Desktop", "Cursor"],
+    },
+    qualityScore: 92,
+    monthlyToolCalls: 567890,
+    deployedFrom: {
+      branch: "main",
+      commit: "b8c3f2e",
+    },
+    uptime: 99.8,
+    latency: {
+      p95: 1.85,
+    },
+    license: "MIT",
+    isLocal: false,
+    publishedDate: "09/22/2024",
+    sourceCode: {
+      platform: "GitHub",
+      url: "https://github.com/github/mcp-server",
+      repo: "github/mcp-server",
+    },
+    homepage: {
+      url: "https://github.com",
+      domain: "github.com",
     },
   },
   6: {

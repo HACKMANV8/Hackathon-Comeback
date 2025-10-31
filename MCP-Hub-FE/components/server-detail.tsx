@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Code, Copy, Terminal } from "lucide-react";
+import { Copy, Terminal } from "lucide-react";
 import { useState } from "react";
+import ServerDetailTabs from "./server-detail-tabs";
 
 interface ServerDetailProps {
   server: {
@@ -28,6 +29,29 @@ interface ServerDetailProps {
       auto: string[];
       json: string[];
     };
+    qualityScore?: number;
+    monthlyToolCalls?: number;
+    deployedFrom?: {
+      branch: string;
+      commit: string;
+    };
+    uptime?: number;
+    latency?: {
+      p95: number;
+    };
+    license?: string;
+    isLocal?: boolean;
+    publishedDate?: string;
+    sourceCode?: {
+      platform: string;
+      url: string;
+      repo: string;
+    };
+    homepage?: {
+      url: string;
+      domain: string;
+    };
+    security?: any;
   };
 }
 
@@ -122,79 +146,18 @@ export default function ServerDetail({ server }: ServerDetailProps) {
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-3 gap-12">
+      <div className="grid grid-cols-4 gap-8">
+        {/* Main Content with Tabs */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="col-span-2 space-y-12"
+          className="col-span-3"
         >
-          <section>
-            <div className="flex items-center gap-2 mb-6">
-              <span className="text-2xl">ℹ</span>
-              <h2 className="text-2xl font-bold text-white/95">About</h2>
-            </div>
-            <p className="text-gray-300/80 leading-relaxed">{server.about}</p>
-          </section>
-
-          <section>
-            <div className="flex items-center gap-2 mb-6">
-              <Code className="w-6 h-6 text-cyan-400" />
-              <h2 className="text-2xl font-bold text-white/95">Tools</h2>
-            </div>
-            <div className="space-y-4">
-              {server.tools.map((tool, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="p-6 border border-white/10 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/20 transition-all duration-200"
-                >
-                  <h3 className="text-lg font-semibold text-white/95 mb-3">
-                    {tool.name}
-                  </h3>
-                  <p className="text-gray-400/80 text-sm leading-relaxed mb-4">
-                    {tool.description}
-                  </p>
-
-                  {tool.parameters && tool.parameters.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-white/5">
-                      <p className="text-xs font-semibold text-gray-400/80 mb-3 uppercase tracking-wider">
-                        Parameters
-                      </p>
-                      <div className="space-y-2">
-                        {tool.parameters.map((param, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-start gap-3 text-sm"
-                          >
-                            <code className="px-2 py-1 bg-white/5 rounded text-cyan-400 font-mono text-xs">
-                              {param.name}
-                            </code>
-                            <span
-                              className={`px-2 py-1 rounded text-xs ${
-                                param.required
-                                  ? "bg-orange-500/20 text-orange-400"
-                                  : "bg-gray-500/20 text-gray-400"
-                              }`}
-                            >
-                              {param.required ? "required" : "optional"}
-                            </span>
-                            <span className="px-2 py-1 bg-white/5 rounded text-gray-400 text-xs">
-                              {param.type}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </section>
+          <ServerDetailTabs server={server} />
         </motion.div>
 
+        {/* Connect Sidebar */}
         <motion.section
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
