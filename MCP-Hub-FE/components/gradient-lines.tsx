@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 export default function GradientLines() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {/* Enhanced Grid Pattern with better visibility */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -20,7 +19,6 @@ export default function GradientLines() {
         }}
       />
 
-      {/* Larger, More Vibrant Floating Orbs */}
       <motion.div
         className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-cyan-500/20 blur-3xl"
         animate={{
@@ -34,7 +32,7 @@ export default function GradientLines() {
           ease: "easeInOut",
         }}
       />
-      
+
       <motion.div
         className="absolute top-1/3 right-1/4 w-[600px] h-[600px] rounded-full bg-blue-500/20 blur-3xl"
         animate={{
@@ -63,42 +61,80 @@ export default function GradientLines() {
         }}
       />
 
-      {/* Enhanced SVG Animations with better visibility */}
-      <svg
-        className="absolute inset-0 w-full h-full"
-        style={{ opacity: 0.3 }}
-      >
+      <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.3 }}>
         <defs>
-          {/* Enhanced Gradients with more vibrant colors */}
-          <linearGradient id="lineGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: "#06b6d4", stopOpacity: 0.2 }} />
-            <stop offset="50%" style={{ stopColor: "#06b6d4", stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: "#3b82f6", stopOpacity: 0.2 }} />
-          </linearGradient>
-          
-          <linearGradient id="lineGradient2" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" style={{ stopColor: "#3b82f6", stopOpacity: 0.2 }} />
-            <stop offset="50%" style={{ stopColor: "#8b5cf6", stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: "#06b6d4", stopOpacity: 0.2 }} />
+          <linearGradient
+            id="lineGradient1"
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="100%"
+          >
+            <stop
+              offset="0%"
+              style={{ stopColor: "#06b6d4", stopOpacity: 0.2 }}
+            />
+            <stop
+              offset="50%"
+              style={{ stopColor: "#06b6d4", stopOpacity: 1 }}
+            />
+            <stop
+              offset="100%"
+              style={{ stopColor: "#3b82f6", stopOpacity: 0.2 }}
+            />
           </linearGradient>
 
-          <linearGradient id="lineGradient3" x1="0%" y1="50%" x2="100%" y2="50%">
-            <stop offset="0%" style={{ stopColor: "#ec4899", stopOpacity: 0.2 }} />
-            <stop offset="50%" style={{ stopColor: "#06b6d4", stopOpacity: 1 }} />
-            <stop offset="100%" style={{ stopColor: "#ec4899", stopOpacity: 0.2 }} />
+          <linearGradient
+            id="lineGradient2"
+            x1="100%"
+            y1="0%"
+            x2="0%"
+            y2="100%"
+          >
+            <stop
+              offset="0%"
+              style={{ stopColor: "#3b82f6", stopOpacity: 0.2 }}
+            />
+            <stop
+              offset="50%"
+              style={{ stopColor: "#8b5cf6", stopOpacity: 1 }}
+            />
+            <stop
+              offset="100%"
+              style={{ stopColor: "#06b6d4", stopOpacity: 0.2 }}
+            />
           </linearGradient>
 
-          {/* Glow filter for nodes */}
+          <linearGradient
+            id="lineGradient3"
+            x1="0%"
+            y1="50%"
+            x2="100%"
+            y2="50%"
+          >
+            <stop
+              offset="0%"
+              style={{ stopColor: "#ec4899", stopOpacity: 0.2 }}
+            />
+            <stop
+              offset="50%"
+              style={{ stopColor: "#06b6d4", stopOpacity: 1 }}
+            />
+            <stop
+              offset="100%"
+              style={{ stopColor: "#ec4899", stopOpacity: 0.2 }}
+            />
+          </linearGradient>
+
           <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
             <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
         </defs>
 
-        {/* Diagonal Lines - Top Left to Bottom Right - Continuous Animation */}
         {[...Array(8)].map((_, i) => (
           <motion.line
             key={`diag1-${i}`}
@@ -109,7 +145,7 @@ export default function GradientLines() {
             stroke="url(#lineGradient1)"
             strokeWidth="2"
             initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ 
+            animate={{
               pathLength: [0, 1, 1, 0],
               opacity: [0, 1, 1, 0],
             }}
@@ -123,7 +159,6 @@ export default function GradientLines() {
           />
         ))}
 
-        {/* Diagonal Lines - Top Right to Bottom Left - Continuous Animation */}
         {[...Array(8)].map((_, i) => (
           <motion.line
             key={`diag2-${i}`}
@@ -134,7 +169,7 @@ export default function GradientLines() {
             stroke="url(#lineGradient2)"
             strokeWidth="2"
             initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ 
+            animate={{
               pathLength: [0, 1, 1, 0],
               opacity: [0, 1, 1, 0],
             }}
@@ -148,7 +183,6 @@ export default function GradientLines() {
           />
         ))}
 
-        {/* Horizontal Connection Lines - Continuous Animation */}
         {[...Array(4)].map((_, i) => (
           <motion.line
             key={`horiz-${i}`}
@@ -160,7 +194,7 @@ export default function GradientLines() {
             strokeWidth="1.5"
             strokeDasharray="10 5"
             initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ 
+            animate={{
               pathLength: [0, 1, 1, 0],
               opacity: [0, 1, 1, 0],
             }}
@@ -174,10 +208,9 @@ export default function GradientLines() {
           />
         ))}
 
-        {/* Larger, More Visible Connection Nodes */}
         {[...Array(12)].map((_, i) => {
-          const cx = 15 + (i * 55) % 85;
-          const cy = 15 + (i * 35) % 75;
+          const cx = 15 + ((i * 55) % 85);
+          const cy = 15 + ((i * 35) % 75);
           return (
             <g key={`node-${i}`}>
               <motion.circle
@@ -187,7 +220,7 @@ export default function GradientLines() {
                 fill="#06b6d4"
                 filter="url(#glow)"
                 initial={{ scale: 0, opacity: 0 }}
-                animate={{ 
+                animate={{
                   scale: [0, 1.2, 1, 1.2, 0],
                   opacity: [0, 1, 1, 1, 0],
                 }}
@@ -198,7 +231,6 @@ export default function GradientLines() {
                   repeatDelay: 1,
                 }}
               />
-              {/* Outer ring pulse */}
               <motion.circle
                 cx={`${cx}%`}
                 cy={`${cy}%`}
@@ -207,7 +239,7 @@ export default function GradientLines() {
                 stroke="#06b6d4"
                 strokeWidth="2"
                 initial={{ scale: 1, opacity: 0.8 }}
-                animate={{ 
+                animate={{
                   scale: [1, 2.5, 3],
                   opacity: [0.8, 0.3, 0],
                 }}
@@ -222,13 +254,12 @@ export default function GradientLines() {
           );
         })}
 
-        {/* Animated Connection Paths between nodes */}
         {[...Array(6)].map((_, i) => {
-          const startX = 20 + (i * 30);
-          const startY = 20 + (i * 15);
+          const startX = 20 + i * 30;
+          const startY = 20 + i * 15;
           const endX = startX + 40;
           const endY = startY + 30;
-          
+
           return (
             <motion.path
               key={`path-${i}`}
@@ -237,7 +268,7 @@ export default function GradientLines() {
               strokeWidth="1.5"
               fill="none"
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ 
+              animate={{
                 pathLength: [0, 1, 1, 0],
                 opacity: [0, 1, 1, 0],
               }}
@@ -252,11 +283,11 @@ export default function GradientLines() {
         })}
       </svg>
 
-      {/* Softer Radial Gradient Overlay to maintain text readability */}
       <div
         className="absolute inset-0"
         style={{
-          background: "radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.3) 100%)",
+          background:
+            "radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.3) 100%)",
         }}
       />
     </div>

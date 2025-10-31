@@ -1,9 +1,9 @@
 "use client";
 
 import Header from "@/components/header";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
-import { Send, Plus, Loader2, Bot, User, Sparkles } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Bot, Loader2, Plus, Send, Sparkles, User } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface Message {
   id: string;
@@ -19,7 +19,6 @@ interface LoadedServer {
   icon: string;
 }
 
-// Sample prompt suggestions
 const promptSuggestions = [
   {
     text: "What should I be working on based on the Linear tickets assigned to me?",
@@ -77,7 +76,6 @@ export default function PlaygroundPage() {
     setInputValue("");
     setIsLoading(true);
 
-    // Simulate AI response
     setTimeout(() => {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -109,7 +107,7 @@ export default function PlaygroundPage() {
       }}
     >
       <Header />
-      
+
       <main className="flex-1 flex flex-col pt-20 px-6 max-w-7xl mx-auto w-full pb-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -117,20 +115,18 @@ export default function PlaygroundPage() {
           transition={{ duration: 0.6 }}
           className="flex-1 flex flex-col"
         >
-          {/* Page Header */}
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-white/95 mb-2">Playground</h1>
+            <h1 className="text-3xl font-bold text-white/95 mb-2">
+              Playground
+            </h1>
             <p className="text-gray-400/80">
               Chat with your MCP servers and execute commands
             </p>
           </div>
 
-          {/* Chat Container */}
           <div className="flex-1 flex flex-col bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
-            {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {messages.length === 0 ? (
-                /* Empty State with Suggestions */
                 <div className="flex flex-col items-center justify-center h-full py-12">
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -149,7 +145,6 @@ export default function PlaygroundPage() {
                     </p>
                   </motion.div>
 
-                  {/* Prompt Suggestions Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl w-full">
                     {promptSuggestions.map((suggestion, index) => (
                       <motion.button
@@ -161,7 +156,9 @@ export default function PlaygroundPage() {
                         className="p-4 bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 hover:border-white/20 rounded-xl transition-all duration-200 text-left group"
                       >
                         <div className="flex items-start gap-3">
-                          <span className="text-2xl flex-shrink-0">{suggestion.icon}</span>
+                          <span className="text-2xl flex-shrink-0">
+                            {suggestion.icon}
+                          </span>
                           <p className="text-sm text-gray-300/80 group-hover:text-white/90 transition-colors">
                             {suggestion.text}
                           </p>
@@ -171,7 +168,6 @@ export default function PlaygroundPage() {
                   </div>
                 </div>
               ) : (
-                /* Messages List */
                 <>
                   <AnimatePresence>
                     {messages.map((message) => (
@@ -182,7 +178,9 @@ export default function PlaygroundPage() {
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.3 }}
                         className={`flex gap-4 ${
-                          message.role === "user" ? "justify-end" : "justify-start"
+                          message.role === "user"
+                            ? "justify-end"
+                            : "justify-start"
                         }`}
                       >
                         {message.role === "assistant" && (
@@ -190,7 +188,7 @@ export default function PlaygroundPage() {
                             <Bot className="w-5 h-5 text-cyan-400" />
                           </div>
                         )}
-                        
+
                         <div
                           className={`max-w-[70%] p-4 rounded-2xl ${
                             message.role === "user"
@@ -238,10 +236,8 @@ export default function PlaygroundPage() {
               )}
             </div>
 
-            {/* Input Area */}
             <div className="border-t border-white/10 p-4">
               <div className="flex items-end gap-3">
-                {/* Loaded Servers Indicator */}
                 {loadedServers.length > 0 && (
                   <div className="flex items-center gap-2 px-3 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
                     <div className="flex -space-x-2">
@@ -256,12 +252,12 @@ export default function PlaygroundPage() {
                       ))}
                     </div>
                     <span className="text-xs text-cyan-400 font-medium">
-                      {loadedServers.length} server{loadedServers.length !== 1 ? "s" : ""} loaded
+                      {loadedServers.length} server
+                      {loadedServers.length !== 1 ? "s" : ""} loaded
                     </span>
                   </div>
                 )}
 
-                {/* Input Field */}
                 <div className="flex-1 relative">
                   <input
                     ref={inputRef}
@@ -277,14 +273,14 @@ export default function PlaygroundPage() {
                     disabled={!inputValue.trim() || isLoading}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-cyan-500/20 hover:bg-cyan-500/30 disabled:bg-white/5 rounded-lg transition-all duration-200 disabled:cursor-not-allowed"
                   >
-                    <Send className={`w-5 h-5 ${inputValue.trim() ? "text-cyan-400" : "text-gray-500"}`} />
+                    <Send
+                      className={`w-5 h-5 ${inputValue.trim() ? "text-cyan-400" : "text-gray-500"}`}
+                    />
                   </button>
                 </div>
 
-                {/* Load Server Button */}
                 <button
                   onClick={() => {
-                    // TODO: Open server selection modal
                     alert("Server selection modal coming soon!");
                   }}
                   className="px-4 py-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl transition-all duration-200 flex items-center gap-2"
@@ -294,7 +290,6 @@ export default function PlaygroundPage() {
                 </button>
               </div>
 
-              {/* Model Info */}
               <div className="flex items-center justify-between mt-3 px-2">
                 <div className="flex items-center gap-2 text-xs text-gray-500/80">
                   <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded-md">
@@ -313,4 +308,3 @@ export default function PlaygroundPage() {
     </div>
   );
 }
-

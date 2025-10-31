@@ -96,7 +96,6 @@ export default function ExploreSection() {
           </a>
         </div>
 
-        {/* Scrollable Container */}
         <div className="relative">
           <div
             ref={scrollContainer}
@@ -117,7 +116,6 @@ export default function ExploreSection() {
             ))}
           </div>
 
-          {/* Navigation Arrows - Enhanced */}
           {canScrollLeft && (
             <button
               onClick={() => scroll("left")}

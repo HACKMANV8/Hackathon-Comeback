@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
   SignInButton,
   SignUpButton,
@@ -8,6 +7,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import { motion } from "framer-motion";
 
 export default function Header() {
   return (
@@ -20,7 +20,10 @@ export default function Header() {
           transition={{ duration: 0.6 }}
           className="flex items-center"
         >
-          <a href="/" className="text-2xl font-semibold tracking-tight text-white/95 hover:text-white transition-colors duration-200">
+          <a
+            href="/"
+            className="text-2xl font-semibold tracking-tight text-white/95 hover:text-white transition-colors duration-200"
+          >
             MCPHub
           </a>
         </motion.div>
@@ -38,7 +41,7 @@ export default function Header() {
           >
             Playground
           </a>
-          
+
           <SignedIn>
             <a href="/my-servers">
               <button className="px-5 py-2 text-sm font-medium bg-white/5 hover:bg-white/10 text-white/90 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-200">
@@ -46,7 +49,7 @@ export default function Header() {
               </button>
             </a>
           </SignedIn>
-          
+
           <SignedOut>
             <div className="flex items-center gap-3">
               <SignInButton mode="modal">
@@ -61,13 +64,13 @@ export default function Header() {
               </SignUpButton>
             </div>
           </SignedOut>
-          
+
           <SignedIn>
-            <UserButton 
+            <UserButton
               appearance={{
                 elements: {
-                  avatarBox: "w-9 h-9 ring-1 ring-white/10"
-                }
+                  avatarBox: "w-9 h-9 ring-1 ring-white/10",
+                },
               }}
             />
           </SignedIn>
@@ -76,4 +79,3 @@ export default function Header() {
     </header>
   );
 }
-

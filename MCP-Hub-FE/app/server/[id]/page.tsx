@@ -1,11 +1,11 @@
 "use client";
 
 import Header from "@/components/header";
-import ServerDetail from "@/components/server-detail";
 import PremiumPaywall from "@/components/premium-paywall";
+import ServerDetail from "@/components/server-detail";
 import { useUser } from "@clerk/nextjs";
-import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const serverData: Record<number, any> = {
   1: {
@@ -491,7 +491,9 @@ export default function ServerPage() {
     if (server && server.isPremium && user) {
       // Check if user has purchased this server
       // In production, this would check your database
-      const purchasedServers = localStorage.getItem(`purchased_servers_${user.id}`);
+      const purchasedServers = localStorage.getItem(
+        `purchased_servers_${user.id}`,
+      );
       if (purchasedServers) {
         const purchased = JSON.parse(purchasedServers);
         setHasAccess(purchased.includes(serverId));
@@ -504,10 +506,15 @@ export default function ServerPage() {
   const handlePaymentSuccess = () => {
     if (user) {
       // Store purchase in localStorage (in production, use a real database)
-      const purchasedServers = localStorage.getItem(`purchased_servers_${user.id}`);
+      const purchasedServers = localStorage.getItem(
+        `purchased_servers_${user.id}`,
+      );
       const purchased = purchasedServers ? JSON.parse(purchasedServers) : [];
       purchased.push(serverId);
-      localStorage.setItem(`purchased_servers_${user.id}`, JSON.stringify(purchased));
+      localStorage.setItem(
+        `purchased_servers_${user.id}`,
+        JSON.stringify(purchased),
+      );
       setHasAccess(true);
     }
   };
@@ -535,7 +542,7 @@ export default function ServerPage() {
               id: server.id,
               name: server.name,
               icon: server.icon,
-              price: server.price
+              price: server.price,
             }}
             onPurchase={handlePaymentSuccess}
           />

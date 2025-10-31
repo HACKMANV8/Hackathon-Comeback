@@ -184,12 +184,14 @@ const allTools = [
 ];
 
 import { Search } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 export default function ExplorePage() {
   const searchParams = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || "",
+  );
 
   useEffect(() => {
     const search = searchParams.get("search");
@@ -207,7 +209,7 @@ export default function ExplorePage() {
       (tool) =>
         tool.name.toLowerCase().includes(query) ||
         tool.handle.toLowerCase().includes(query) ||
-        tool.description.toLowerCase().includes(query)
+        tool.description.toLowerCase().includes(query),
     );
   }, [searchQuery]);
 
@@ -251,7 +253,8 @@ export default function ExplorePage() {
           {/* Results count */}
           <div className="flex items-center justify-between mb-8">
             <p className="text-sm font-medium text-gray-400/80">
-              {filteredTools.length} {filteredTools.length === 1 ? "server" : "servers"} found
+              {filteredTools.length}{" "}
+              {filteredTools.length === 1 ? "server" : "servers"} found
             </p>
           </div>
 
@@ -263,7 +266,10 @@ export default function ExplorePage() {
                   key={tool.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: Math.min(index * 0.03, 0.3) }}
+                  transition={{
+                    duration: 0.4,
+                    delay: Math.min(index * 0.03, 0.3),
+                  }}
                 >
                   <ToolCard tool={tool} />
                 </motion.div>
@@ -273,9 +279,7 @@ export default function ExplorePage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4">
                   <Search className="w-8 h-8 text-gray-500" />
                 </div>
-                <p className="text-xl text-gray-400 mb-2">
-                  No servers found
-                </p>
+                <p className="text-xl text-gray-400 mb-2">No servers found</p>
                 <p className="text-sm text-gray-500">
                   Try searching with different keywords
                 </p>

@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Upload, Plus, Minus } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Upload, X } from "lucide-react";
 import { useState } from "react";
 
 interface PublishServerModalProps {
@@ -28,7 +28,11 @@ export interface ServerFormData {
   };
 }
 
-export default function PublishServerModal({ isOpen, onClose, onSubmit }: PublishServerModalProps) {
+export default function PublishServerModal({
+  isOpen,
+  onClose,
+  onSubmit,
+}: PublishServerModalProps) {
   const [formData, setFormData] = useState<ServerFormData>({
     name: "",
     version: "1.0.0",
@@ -47,44 +51,16 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
     },
   });
 
-  const [tagInput, setTagInput] = useState("");
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
     onClose();
   };
 
-  const addTag = () => {
-    if (tagInput.trim() && formData.metadata?.tags) {
-      setFormData({
-        ...formData,
-        metadata: {
-          ...formData.metadata,
-          tags: [...formData.metadata.tags, tagInput.trim()],
-        },
-      });
-      setTagInput("");
-    }
-  };
-
-  const removeTag = (index: number) => {
-    if (formData.metadata?.tags) {
-      setFormData({
-        ...formData,
-        metadata: {
-          ...formData.metadata,
-          tags: formData.metadata.tags.filter((_, i) => i !== index),
-        },
-      });
-    }
-  };
-
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -93,7 +69,6 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
             className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
           />
 
-          {/* Modal */}
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -102,10 +77,11 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
               transition={{ duration: 0.2 }}
               className="bg-white/[0.02] border border-white/10 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden backdrop-blur-xl my-8"
             >
-              {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-white/10">
                 <div>
-                  <h2 className="text-2xl font-bold text-white/95">Publish New Server</h2>
+                  <h2 className="text-2xl font-bold text-white/95">
+                    Publish New Server
+                  </h2>
                   <p className="text-gray-400/80 text-sm mt-1">
                     Share your MCP server with the community
                   </p>
@@ -118,14 +94,16 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
                 </button>
               </div>
 
-              {/* Form */}
-              <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
+              <form
+                onSubmit={handleSubmit}
+                className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]"
+              >
                 <div className="space-y-6">
-                  {/* Basic Information */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-white/95">Basic Information</h3>
-                    
-                    {/* Name */}
+                    <h3 className="text-lg font-semibold text-white/95">
+                      Basic Information
+                    </h3>
+
                     <div>
                       <label className="block text-sm font-medium text-gray-300/90 mb-2">
                         Server Name *
@@ -134,13 +112,14 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
                         type="text"
                         required
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
                         placeholder="e.g., image-watermarker"
                         className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/90 placeholder-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300"
                       />
                     </div>
 
-                    {/* Version & Author */}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-300/90 mb-2">
@@ -150,7 +129,12 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
                           type="text"
                           required
                           value={formData.version}
-                          onChange={(e) => setFormData({ ...formData, version: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              version: e.target.value,
+                            })
+                          }
                           placeholder="1.0.0"
                           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/90 placeholder-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300"
                         />
@@ -163,14 +147,15 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
                           type="text"
                           required
                           value={formData.author}
-                          onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, author: e.target.value })
+                          }
                           placeholder="Your Name"
                           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/90 placeholder-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300"
                         />
                       </div>
                     </div>
 
-                    {/* Description */}
                     <div>
                       <label className="block text-sm font-medium text-gray-300/90 mb-2">
                         Description *
@@ -178,7 +163,12 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
                       <textarea
                         required
                         value={formData.description}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            description: e.target.value,
+                          })
+                        }
                         placeholder="A simple MCP that adds watermark logos to images."
                         rows={3}
                         className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/90 placeholder-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300 resize-none"
@@ -186,11 +176,11 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
                     </div>
                   </div>
 
-                  {/* Technical Details */}
                   <div className="space-y-4 pt-4 border-t border-white/10">
-                    <h3 className="text-lg font-semibold text-white/95">Technical Details</h3>
-                    
-                    {/* Language & License */}
+                    <h3 className="text-lg font-semibold text-white/95">
+                      Technical Details
+                    </h3>
+
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-300/90 mb-2">
@@ -198,7 +188,9 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
                         </label>
                         <select
                           value={formData.lang}
-                          onChange={(e) => setFormData({ ...formData, lang: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, lang: e.target.value })
+                          }
                           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/90 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300"
                         >
                           <option value="Python">Python</option>
@@ -215,7 +207,12 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
                         </label>
                         <select
                           value={formData.license}
-                          onChange={(e) => setFormData({ ...formData, license: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              license: e.target.value,
+                            })
+                          }
                           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/90 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300"
                         >
                           <option value="MIT">MIT</option>
@@ -227,7 +224,6 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
                       </div>
                     </div>
 
-                    {/* Entrypoint */}
                     <div>
                       <label className="block text-sm font-medium text-gray-300/90 mb-2">
                         Entrypoint *
@@ -236,18 +232,23 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
                         type="text"
                         required
                         value={formData.entrypoint}
-                        onChange={(e) => setFormData({ ...formData, entrypoint: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            entrypoint: e.target.value,
+                          })
+                        }
                         placeholder="main.py"
                         className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/90 placeholder-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300"
                       />
                     </div>
                   </div>
 
-                  {/* Repository */}
                   <div className="space-y-4 pt-4 border-t border-white/10">
-                    <h3 className="text-lg font-semibold text-white/95">Repository</h3>
-                    
-                    {/* Repository Type & URL */}
+                    <h3 className="text-lg font-semibold text-white/95">
+                      Repository
+                    </h3>
+
                     <div className="grid grid-cols-4 gap-4">
                       <div className="col-span-1">
                         <label className="block text-sm font-medium text-gray-300/90 mb-2">
@@ -258,7 +259,10 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              repository: { ...formData.repository, type: e.target.value },
+                              repository: {
+                                ...formData.repository,
+                                type: e.target.value,
+                              },
                             })
                           }
                           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/90 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300"
@@ -278,7 +282,10 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              repository: { ...formData.repository, url: e.target.value },
+                              repository: {
+                                ...formData.repository,
+                                url: e.target.value,
+                              },
                             })
                           }
                           placeholder="https://github.com/username/repo"
@@ -287,15 +294,11 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
                       </div>
                     </div>
                   </div>
-
                 </div>
               </form>
 
-              {/* Footer */}
               <div className="flex items-center justify-between p-6 border-t border-white/10">
-                <p className="text-sm text-gray-400/80">
-                  * Required fields
-                </p>
+                <p className="text-sm text-gray-400/80">* Required fields</p>
                 <div className="flex gap-3">
                   <button
                     type="button"
@@ -320,4 +323,3 @@ export default function PublishServerModal({ isOpen, onClose, onSubmit }: Publis
     </AnimatePresence>
   );
 }
-

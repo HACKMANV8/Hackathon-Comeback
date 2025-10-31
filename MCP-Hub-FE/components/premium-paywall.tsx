@@ -1,8 +1,8 @@
 "use client";
 
+import { SignedIn, SignedOut, SignInButton, useUser } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import { Check, Lock, Sparkles } from "lucide-react";
-import { SignedIn, SignedOut, SignInButton, useUser } from "@clerk/nextjs";
 import { useState } from "react";
 
 interface PremiumPaywallProps {
@@ -15,28 +15,23 @@ interface PremiumPaywallProps {
   onPurchase: () => void;
 }
 
-export default function PremiumPaywall({ server, onPurchase }: PremiumPaywallProps) {
+export default function PremiumPaywall({
+  server,
+  onPurchase,
+}: PremiumPaywallProps) {
   const { user } = useUser();
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handlePurchase = async () => {
     setIsProcessing(true);
-    
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // In a real app, you would:
-    // 1. Create a payment intent with Stripe
-    // 2. Process the payment
-    // 3. Store the purchase in your database
-    // 4. Grant access to the user
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     setIsProcessing(false);
     onPurchase();
   };
 
   return (
-    <div className="min-h-screen bg-black overflow-x-hidden flex items-center justify-center px-6"
+    <div
+      className="min-h-screen bg-black overflow-x-hidden flex items-center justify-center px-6"
       style={{
         backgroundImage: "linear-gradient(135deg, #000000 0%, #0a1e35 100%)",
       }}
@@ -47,7 +42,6 @@ export default function PremiumPaywall({ server, onPurchase }: PremiumPaywallPro
         transition={{ duration: 0.5 }}
         className="max-w-2xl w-full"
       >
-        {/* Premium Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -60,45 +54,51 @@ export default function PremiumPaywall({ server, onPurchase }: PremiumPaywallPro
           </div>
         </motion.div>
 
-        {/* Main Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           className="bg-white/[0.02] border border-white/10 rounded-2xl p-8 backdrop-blur-sm"
         >
-          {/* Server Info - Centered */}
           <div className="flex flex-col items-center text-center mb-6 pb-6 border-b border-white/10">
             <div className="w-20 h-20 rounded-xl bg-white/5 flex items-center justify-center text-5xl mb-4">
               {server.icon}
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white/95 mb-2">{server.name}</h1>
+              <h1 className="text-3xl font-bold text-white/95 mb-2">
+                {server.name}
+              </h1>
               <div className="flex items-center justify-center gap-2">
                 <Lock className="w-4 h-4 text-amber-400" />
-                <span className="text-gray-400/80 text-sm">Premium Access Required</span>
+                <span className="text-gray-400/80 text-sm">
+                  Premium Access Required
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Pricing */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-5xl font-bold text-white/95">${server.price}</span>
+              <span className="text-5xl font-bold text-white/95">
+                ${server.price}
+              </span>
               <span className="text-gray-400/80 text-lg">/ lifetime</span>
             </div>
-            <p className="text-gray-500/80 text-sm">One-time payment • Unlimited access</p>
+            <p className="text-gray-500/80 text-sm">
+              One-time payment • Unlimited access
+            </p>
           </div>
 
-          {/* Features */}
           <div className="space-y-4 mb-8">
-            <h3 className="text-white/95 font-semibold mb-4">What's included:</h3>
+            <h3 className="text-white/95 font-semibold mb-4">
+              What's included:
+            </h3>
             {[
               "Full access to all premium tools",
               "Priority support and updates",
               "Advanced API features",
               "Commercial usage rights",
-              "Lifetime access with no recurring fees"
+              "Lifetime access with no recurring fees",
             ].map((feature, index) => (
               <motion.div
                 key={index}
@@ -115,7 +115,6 @@ export default function PremiumPaywall({ server, onPurchase }: PremiumPaywallPro
             ))}
           </div>
 
-          {/* Action Buttons */}
           <SignedOut>
             <div className="space-y-4">
               <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-4">
@@ -157,7 +156,6 @@ export default function PremiumPaywall({ server, onPurchase }: PremiumPaywallPro
             )}
           </SignedIn>
 
-          {/* Security Notice */}
           <div className="mt-6 pt-6 border-t border-white/10">
             <p className="text-gray-500/80 text-xs text-center">
               🔒 Secure payment processing • 30-day money-back guarantee
@@ -165,7 +163,6 @@ export default function PremiumPaywall({ server, onPurchase }: PremiumPaywallPro
           </div>
         </motion.div>
 
-        {/* Back Link */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

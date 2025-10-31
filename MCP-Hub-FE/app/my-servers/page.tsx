@@ -1,20 +1,22 @@
 "use client";
 
 import Header from "@/components/header";
-import PublishServerModal, { ServerFormData } from "@/components/publish-server-modal";
-import { motion } from "framer-motion";
+import PublishServerModal, {
+  ServerFormData,
+} from "@/components/publish-server-modal";
 import { useUser } from "@clerk/nextjs";
-import { Plus, Settings, Trash2, Eye, ExternalLink } from "lucide-react";
+import { motion } from "framer-motion";
+import { ExternalLink, Eye, Plus, Settings, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-// Dummy server data for the logged-in user
 const dummyUserServers = [
   {
     id: 101,
     name: "My Weather API",
     handle: "@myusername/weather-mcp-server",
-    description: "Real-time weather data and forecasts for any location worldwide. Includes historical data and severe weather alerts.",
+    description:
+      "Real-time weather data and forecasts for any location worldwide. Includes historical data and severe weather alerts.",
     icon: "🌤️",
     status: "active",
     deployedAt: "2 days ago",
@@ -26,7 +28,8 @@ const dummyUserServers = [
     id: 102,
     name: "Database Manager",
     handle: "@myusername/db-manager-mcp",
-    description: "Comprehensive database management tools for PostgreSQL and MySQL. Execute queries, manage schemas, and monitor performance.",
+    description:
+      "Comprehensive database management tools for PostgreSQL and MySQL. Execute queries, manage schemas, and monitor performance.",
     icon: "🗄️",
     status: "active",
     deployedAt: "1 week ago",
@@ -38,7 +41,8 @@ const dummyUserServers = [
     id: 103,
     name: "Image Processor",
     handle: "@myusername/image-processor",
-    description: "Advanced image processing capabilities including resize, crop, filters, and AI-powered enhancements.",
+    description:
+      "Advanced image processing capabilities including resize, crop, filters, and AI-powered enhancements.",
     icon: "🖼️",
     status: "draft",
     deployedAt: "3 days ago",
@@ -50,7 +54,8 @@ const dummyUserServers = [
     id: 104,
     name: "Email Automation",
     handle: "@myusername/email-automation",
-    description: "Automate your email workflows with templates, scheduling, and smart triggers for various events.",
+    description:
+      "Automate your email workflows with templates, scheduling, and smart triggers for various events.",
     icon: "📧",
     status: "active",
     deployedAt: "5 days ago",
@@ -65,9 +70,6 @@ export default function MyServersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handlePublishServer = (data: ServerFormData) => {
-    console.log("Publishing server:", data);
-    // TODO: Send to backend API
-    // For now, just log the data
     alert(`Server "${data.name}" published successfully!`);
   };
 
@@ -94,7 +96,9 @@ export default function MyServersPage() {
       >
         <Header />
         <div className="text-center">
-          <p className="text-white text-xl mb-4">Please sign in to view your servers</p>
+          <p className="text-white text-xl mb-4">
+            Please sign in to view your servers
+          </p>
         </div>
       </div>
     );
@@ -120,10 +124,11 @@ export default function MyServersPage() {
           transition={{ duration: 0.6 }}
           className="py-12"
         >
-          {/* Header */}
           <div className="flex items-center justify-between mb-12">
             <div>
-              <h1 className="text-5xl font-bold text-white/95 mb-4">My Servers</h1>
+              <h1 className="text-5xl font-bold text-white/95 mb-4">
+                My Servers
+              </h1>
               <p className="text-gray-400/80 text-lg">
                 Manage and monitor your published MCP servers
               </p>
@@ -139,7 +144,6 @@ export default function MyServersPage() {
             </motion.button>
           </div>
 
-          {/* Stats Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -148,7 +152,9 @@ export default function MyServersPage() {
               className="p-6 bg-white/[0.02] border border-white/10 rounded-xl"
             >
               <p className="text-gray-400/80 text-sm mb-2">Total Servers</p>
-              <p className="text-3xl font-bold text-white/95">{dummyUserServers.length}</p>
+              <p className="text-3xl font-bold text-white/95">
+                {dummyUserServers.length}
+              </p>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -158,7 +164,7 @@ export default function MyServersPage() {
             >
               <p className="text-gray-400/80 text-sm mb-2">Active</p>
               <p className="text-3xl font-bold text-white/95">
-                {dummyUserServers.filter(s => s.status === "active").length}
+                {dummyUserServers.filter((s) => s.status === "active").length}
               </p>
             </motion.div>
             <motion.div
@@ -183,7 +189,6 @@ export default function MyServersPage() {
             </motion.div>
           </div>
 
-          {/* Servers List */}
           <div className="space-y-4">
             {dummyUserServers.map((server, index) => (
               <motion.div
@@ -194,7 +199,6 @@ export default function MyServersPage() {
                 className="p-6 bg-white/[0.02] border border-white/10 hover:border-white/20 hover:bg-white/[0.04] rounded-xl transition-all duration-200"
               >
                 <div className="flex items-start justify-between">
-                  {/* Left: Server Info */}
                   <div className="flex items-start gap-4 flex-1">
                     <div className="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center text-3xl flex-shrink-0">
                       {server.icon}
@@ -219,16 +223,24 @@ export default function MyServersPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-gray-400/70 text-sm mb-2">{server.handle}</p>
+                      <p className="text-gray-400/70 text-sm mb-2">
+                        {server.handle}
+                      </p>
                       <p className="text-gray-300/80 text-sm leading-relaxed mb-4">
                         {server.description}
                       </p>
                       <div className="flex items-center gap-6 text-sm">
                         <span className="text-gray-400/80">
-                          <span className="font-medium text-white/90">{server.tools}</span> tools
+                          <span className="font-medium text-white/90">
+                            {server.tools}
+                          </span>{" "}
+                          tools
                         </span>
                         <span className="text-gray-400/80">
-                          <span className="font-medium text-white/90">{server.usage}</span> requests
+                          <span className="font-medium text-white/90">
+                            {server.usage}
+                          </span>{" "}
+                          requests
                         </span>
                         <span className="text-gray-400/80">
                           Updated {server.deployedAt}
@@ -237,7 +249,6 @@ export default function MyServersPage() {
                     </div>
                   </div>
 
-                  {/* Right: Actions */}
                   <div className="flex items-center gap-2 ml-4">
                     <Link href={`/server/${server.id}`}>
                       <button
@@ -271,7 +282,6 @@ export default function MyServersPage() {
             ))}
           </div>
 
-          {/* Empty State (for when user has no servers - commented out for now) */}
           {dummyUserServers.length === 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -282,9 +292,12 @@ export default function MyServersPage() {
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/5 mb-6">
                 <Plus className="w-10 h-10 text-gray-400" />
               </div>
-              <h2 className="text-2xl font-bold text-white/95 mb-3">No servers yet</h2>
+              <h2 className="text-2xl font-bold text-white/95 mb-3">
+                No servers yet
+              </h2>
               <p className="text-gray-400/80 mb-8 max-w-md mx-auto">
-                Get started by publishing your first MCP server and share it with the community
+                Get started by publishing your first MCP server and share it
+                with the community
               </p>
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -299,4 +312,3 @@ export default function MyServersPage() {
     </div>
   );
 }
-

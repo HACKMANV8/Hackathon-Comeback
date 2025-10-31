@@ -2,10 +2,10 @@
 
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import GradientLines from "./gradient-lines";
+import { useState } from "react";
 import AnimatedCounter from "./animated-counter";
+import GradientLines from "./gradient-lines";
 
 export default function HeroSection() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,7 +20,6 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-6 py-20">
-      {/* Content */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -31,10 +30,10 @@ export default function HeroSection() {
           Your Agent's Gateway to the World
         </h1>
         <p className="text-xl text-gray-300/90 mb-12">
-          Extend your AI with <AnimatedCounter value={2317} /> tools and skills built by the community.
+          Extend your AI with <AnimatedCounter value={2317} /> tools and skills
+          built by the community.
         </p>
 
-        {/* Search Bar */}
         <motion.form
           onSubmit={handleSearch}
           initial={{ opacity: 0, y: 10 }}
@@ -58,7 +57,6 @@ export default function HeroSection() {
         </motion.form>
       </motion.div>
 
-      {/* Animated Gradient Lines */}
       <GradientLines />
     </section>
   );
