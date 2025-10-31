@@ -217,38 +217,71 @@ export default function ServerDetail({ server }: ServerDetailProps) {
             ))}
           </div>
 
-          <div className="mb-4">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search clients..."
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-300/90 placeholder-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300"
-            />
-          </div>
+          {activeTab === "auto" ? (
+            <>
+              <div className="mb-4">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search clients..."
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-300/90 placeholder-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300"
+                />
+              </div>
 
-          <div className="space-y-3">
-            {filteredClients.length > 0 ? (
-              filteredClients.map((client, index) => (
-                <motion.div
-                  key={client.name}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  className="flex items-center gap-3 p-3 bg-white/[0.02] rounded-xl hover:bg-white/[0.04] border border-white/10 hover:border-white/20 transition-all duration-200 cursor-pointer"
-                >
-                  <span className="text-xl">{client.icon}</span>
-                  <span className="text-gray-300/90 text-sm font-medium">
-                    {client.name}
-                  </span>
-                </motion.div>
-              ))
-            ) : (
-              <p className="text-gray-500/80 text-sm py-4 text-center">
-                No clients found
-              </p>
-            )}
-          </div>
+              <div className="space-y-3">
+                {filteredClients.length > 0 ? (
+                  filteredClients.map((client, index) => (
+                    <motion.div
+                      key={client.name}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                      className="flex items-center gap-3 p-3 bg-white/[0.02] rounded-xl hover:bg-white/[0.04] border border-white/10 hover:border-white/20 transition-all duration-200 cursor-pointer"
+                    >
+                      <span className="text-xl">{client.icon}</span>
+                      <span className="text-gray-300/90 text-sm font-medium">
+                        {client.name}
+                      </span>
+                    </motion.div>
+                  ))
+                ) : (
+                  <p className="text-gray-500/80 text-sm py-4 text-center">
+                    No clients found
+                  </p>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+              <pre className="text-xs text-gray-300/90 font-mono overflow-x-auto">
+                <code>{`{
+  "mcpServers": {
+    "${server.name}": {
+      "url": "https://zo57to64ouldo4fhyr2434pu2q0bqkzf.lambda-url.ap-south-1.on.aws/${server.name}"
+    }
+  }
+}`}</code>
+              </pre>
+              <button
+                onClick={() => {
+                  const jsonConfig = `{
+  "mcpServers": {
+    "${server.name}": {
+      "url": "https://zo57to64ouldo4fhyr2434pu2q0bqkzf.lambda-url.ap-south-1.on.aws/${server.name}"
+    }
+  }
+}`;
+                  navigator.clipboard.writeText(jsonConfig);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }}
+                className="mt-3 w-full px-4 py-2 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-500/50 rounded-lg text-cyan-400 text-sm font-medium transition-all duration-200"
+              >
+                {copied ? "Copied!" : "Copy JSON"}
+              </button>
+            </div>
+          )}
         </motion.section>
       </div>
     </motion.div>
