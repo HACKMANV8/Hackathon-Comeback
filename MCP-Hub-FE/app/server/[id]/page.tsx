@@ -67,14 +67,24 @@ export default function ServerPage() {
     lastDeployed: "Recently",
     icon: "📦",
     about: server.description,
-    tools: [
-      {
-        name: server.entrypoint,
-        description: `Entry point: ${server.entrypoint}`,
-      },
-    ],
+    tools: server.tools?.names
+      ? server.tools.names.map((toolName) => ({
+          name: toolName,
+          description: `Tool provided by ${server.name}`,
+        }))
+      : [
+          {
+            name: server.entrypoint,
+            description: `Entry point: ${server.entrypoint}`,
+          },
+        ],
     connectionUrl: server.repository.url,
-    tags: [server.lang, server.license, `v${server.version}`],
+    tags: [
+      server.lang,
+      server.license,
+      `v${server.version}`,
+      ...(server.tools?.count ? [`${server.tools.count} tools`] : []),
+    ],
     clients: {
       auto: [],
       json: [],

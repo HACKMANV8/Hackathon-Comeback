@@ -12,6 +12,10 @@ export interface ServerResponse {
     type: string;
     url: string;
   };
+  tools?: {
+    count: number;
+    names: string[];
+  };
   pricing?: {
     currency: string;
     amount: number;

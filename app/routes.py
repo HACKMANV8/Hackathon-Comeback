@@ -70,6 +70,10 @@ async def list_servers():
                 "repository": server.get("repository"),
             }
             
+            # Add tools if exists
+            if "tools" in server and server["tools"]:
+                server_info["tools"] = server["tools"]
+            
             # Add pricing if exists
             if "pricing" in server and server["pricing"]:
                 server_info["pricing"] = server["pricing"]
