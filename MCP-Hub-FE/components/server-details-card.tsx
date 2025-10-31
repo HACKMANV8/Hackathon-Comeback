@@ -31,6 +31,10 @@ interface ServerDetailsCardProps {
     license?: string;
     isLocal?: boolean;
     publishedDate?: string;
+    pricing?: {
+      currency: string;
+      amount: number;
+    };
     sourceCode?: {
       platform: string;
       url: string;
@@ -216,6 +220,27 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
             </div>
           </div>
         )}
+
+        {/* Pricing */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-sm text-gray-400/70">💰</span>
+            <p className="text-xs text-gray-400/70 uppercase tracking-wider">
+              Pricing
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {server.pricing && server.pricing.currency && server.pricing.amount ? (
+              <span className="px-3 py-1.5 bg-amber-500/20 text-amber-400 text-sm font-semibold rounded">
+                {server.pricing.currency} {server.pricing.amount}
+              </span>
+            ) : (
+              <span className="px-3 py-1.5 bg-green-500/20 text-green-400 text-sm font-semibold rounded">
+                FREE
+              </span>
+            )}
+          </div>
+        </div>
 
         {/* Source Code */}
         {server.sourceCode && (

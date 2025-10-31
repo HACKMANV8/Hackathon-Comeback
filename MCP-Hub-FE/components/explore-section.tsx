@@ -2,140 +2,249 @@
 
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ToolCard from "./tool-card";
 
-const tools = [
-  {
-    id: 1,
-    name: "Linkup",
-    handle: "@LinkupPlatform/linkup-mcp-server",
-    description:
-      "Search the web in real time to get trustworthy, source-backed answers. Find the latest news...",
-    icon: "🔗",
-    tag: "Remote",
-    metric: "457",
-    color: "from-orange-400 to-orange-600",
-  },
-  {
-    id: 2,
-    name: "Exa Search",
-    handle: "exa",
-    description:
-      "Fast, intelligent web search and web crawling. New mcp tool! Exa-code is a context tool for...",
-    icon: "🔍",
-    tag: "Remote",
-    metric: "418.81k",
-    color: "from-blue-400 to-blue-600",
-  },
-  {
-    id: 3,
-    name: "Supabase",
-    handle: "supabase",
-    description:
-      "Search the Supabase docs for up-to-date guidance and troubleshoot errors quickly...",
-    icon: "🟢",
-    tag: "Remote",
-    metric: "46.91k",
-    color: "from-green-400 to-green-600",
-  },
-  {
-    id: 4,
-    name: "Browserbase",
-    handle: "@browserbasehq/mcp-browserbase",
-    description:
-      "Provides cloud browser automation capabilities using Stagehand and...",
-    icon: "🌐",
-    tag: "Remote",
-    metric: "44.41k",
-    color: "from-red-400 to-red-600",
-  },
-];
+interface Server {
+  name: string;
+  author: string;
+  description: string;
+  lang: string;
+  license: string;
+  pricing?: {
+    currency: string;
+    amount: number;
+  };
+}
 
 export default function ExploreSection() {
-  const scrollContainer = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [freeTools, setFreeTools] = useState<Server[]>([]);
+  const [paidTools, setPaidTools] = useState<Server[]>([]);
+  const [loading, setLoading] = useState(true);
+  const freeScrollContainer = useRef<HTMLDivElement>(null);
+  const paidScrollContainer = useRef<HTMLDivElement>(null);
+  const [canScrollLeftFree, setCanScrollLeftFree] = useState(false);
+  const [canScrollRightFree, setCanScrollRightFree] = useState(true);
+  const [canScrollLeftPaid, setCanScrollLeftPaid] = useState(false);
+  const [canScrollRightPaid, setCanScrollRightPaid] = useState(true);
 
-  const scroll = (direction: "left" | "right") => {
-    if (scrollContainer.current) {
+  useEffect(() => {
+    const loadServers = async () => {
+      try {
+        const { fetchServers } = await import("@/lib/api");
+        const data = await fetchServers();
+        const free = data.filter(
+          (server) =>
+            !server.pricing ||
+            !server.pricing.currency ||
+            !server.pricing.amount,
+        );
+        const paid = data.filter(
+          (server) =>
+            server.pricing && server.pricing.currency && server.pricing.amount,
+        );
+        setFreeTools(free);
+        setPaidTools(paid);
+      } catch (error) {
+        console.error("Failed to fetch servers:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadServers();
+  }, []);
+
+  const scrollFree = (direction: "left" | "right") => {
+    if (freeScrollContainer.current) {
       const scrollAmount = 400;
-      scrollContainer.current.scrollBy({
+      freeScrollContainer.current.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
         behavior: "smooth",
       });
     }
   };
 
-  const handleScroll = () => {
-    if (scrollContainer.current) {
-      setCanScrollLeft(scrollContainer.current.scrollLeft > 0);
-      setCanScrollRight(
-        scrollContainer.current.scrollLeft <
-          scrollContainer.current.scrollWidth -
-            scrollContainer.current.clientWidth,
+  const scrollPaid = (direction: "left" | "right") => {
+    if (paidScrollContainer.current) {
+      const scrollAmount = 400;
+      paidScrollContainer.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleScrollFree = () => {
+    if (freeScrollContainer.current) {
+      setCanScrollLeftFree(freeScrollContainer.current.scrollLeft > 0);
+      setCanScrollRightFree(
+        freeScrollContainer.current.scrollLeft <
+          freeScrollContainer.current.scrollWidth -
+            freeScrollContainer.current.clientWidth,
       );
     }
   };
 
-  return (
-    <section className="py-20 px-6 max-w-7xl mx-auto relative z-10">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        viewport={{ once: true }}
-      >
-        <div className="flex items-center justify-between mb-12">
-          <h2 className="text-3xl font-bold text-white">Explore</h2>
-          <a
-            href="/explore"
-            className="text-sm font-medium text-gray-300/90 hover:text-white transition-colors duration-200 flex items-center gap-2"
-          >
-            View all <span>→</span>
-          </a>
-        </div>
+  const handleScrollPaid = () => {
+    if (paidScrollContainer.current) {
+      setCanScrollLeftPaid(paidScrollContainer.current.scrollLeft > 0);
+      setCanScrollRightPaid(
+        paidScrollContainer.current.scrollLeft <
+          paidScrollContainer.current.scrollWidth -
+            paidScrollContainer.current.clientWidth,
+      );
+    }
+  };
 
-        <div className="relative">
-          <div
-            ref={scrollContainer}
-            onScroll={handleScroll}
-            className="flex gap-6 overflow-x-auto scroll-smooth py-2 pb-4 hide-scrollbar"
-          >
-            {tools.map((tool, index) => (
-              <motion.div
-                key={tool.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="w-[340px] flex-shrink-0"
-              >
-                <ToolCard tool={tool} />
-              </motion.div>
-            ))}
+  if (loading) {
+    return (
+      <section className="py-20 px-6 max-w-7xl mx-auto relative z-10">
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400" />
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="py-20 px-6 max-w-7xl mx-auto relative z-10 space-y-16">
+      {/* Free Servers Section */}
+      {freeTools.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <h2 className="text-3xl font-bold text-white">Free Servers</h2>
+              <span className="px-3 py-1 bg-green-500/20 text-green-400 text-sm font-semibold rounded-full">
+                {freeTools.length}
+              </span>
+            </div>
+            <a
+              href="/explore"
+              className="text-sm font-medium text-gray-300/90 hover:text-white transition-colors duration-200 flex items-center gap-2"
+            >
+              View all <span>→</span>
+            </a>
           </div>
 
-          {canScrollLeft && (
-            <button
-              onClick={() => scroll("left")}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white p-3 rounded-full transition-all duration-200 z-20 backdrop-blur-sm"
-              aria-label="Scroll left"
+          <div className="relative">
+            <div
+              ref={freeScrollContainer}
+              onScroll={handleScrollFree}
+              className="flex gap-6 overflow-x-auto scroll-smooth py-2 pb-4 hide-scrollbar"
             >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-          )}
-          {canScrollRight && (
-            <button
-              onClick={() => scroll("right")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white p-3 rounded-full transition-all duration-200 z-20 backdrop-blur-sm"
-              aria-label="Scroll right"
+              {freeTools.map((tool, index) => (
+                <motion.div
+                  key={tool.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="w-[340px] flex-shrink-0"
+                >
+                  <ToolCard tool={tool} />
+                </motion.div>
+              ))}
+            </div>
+
+            {canScrollLeftFree && (
+              <button
+                onClick={() => scrollFree("left")}
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white p-3 rounded-full transition-all duration-200 z-20 backdrop-blur-sm"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+            )}
+            {canScrollRightFree && (
+              <button
+                onClick={() => scrollFree("right")}
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white p-3 rounded-full transition-all duration-200 z-20 backdrop-blur-sm"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Paid Servers Section */}
+      {paidTools.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <h2 className="text-3xl font-bold text-white">Premium Servers</h2>
+              <span className="px-3 py-1 bg-amber-500/20 text-amber-400 text-sm font-semibold rounded-full">
+                {paidTools.length}
+              </span>
+            </div>
+            <a
+              href="/explore"
+              className="text-sm font-medium text-gray-300/90 hover:text-white transition-colors duration-200 flex items-center gap-2"
             >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          )}
+              View all <span>→</span>
+            </a>
+          </div>
+
+          <div className="relative">
+            <div
+              ref={paidScrollContainer}
+              onScroll={handleScrollPaid}
+              className="flex gap-6 overflow-x-auto scroll-smooth py-2 pb-4 hide-scrollbar"
+            >
+              {paidTools.map((tool, index) => (
+                <motion.div
+                  key={tool.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="w-[340px] flex-shrink-0"
+                >
+                  <ToolCard tool={tool} />
+                </motion.div>
+              ))}
+            </div>
+
+            {canScrollLeftPaid && (
+              <button
+                onClick={() => scrollPaid("left")}
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white p-3 rounded-full transition-all duration-200 z-20 backdrop-blur-sm"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+            )}
+            {canScrollRightPaid && (
+              <button
+                onClick={() => scrollPaid("right")}
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white p-3 rounded-full transition-all duration-200 z-20 backdrop-blur-sm"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Empty State */}
+      {freeTools.length === 0 && paidTools.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-400/70">No servers available</p>
         </div>
-      </motion.div>
+      )}
     </section>
   );
 }
