@@ -79,7 +79,7 @@ export default function ServerDetail({ server }: ServerDetailProps) {
   const [copied, setCopied] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const pullCommand = `mcphub pull ${server.handle}`;
+  const pullCommand = `mcphub pull ${server.name}`;
 
   const copyCommand = () => {
     navigator.clipboard.writeText(pullCommand);
