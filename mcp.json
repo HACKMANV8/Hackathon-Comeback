@@ -1,0 +1,38 @@
+{
+  "mcphub-servers": [
+    {
+      "name": "image-watermarker",
+      "version": "1.0.0",
+      "description": "A simple MCP that adds watermark logos to images.",
+      "author": "Arush Verma",
+      "lang": "Python",
+      "license": "MIT",
+      "entrypoint": "main.py",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/arushverma/image-watermarker"
+      },
+      "meta": {
+        "created_at": "2025-10-29T12:35:00Z",
+        "updated_at": "2025-10-29T12:35:00Z"
+      }
+    },
+    {
+      "name": "chat-analytics",
+      "version": "0.9.2",
+      "description": "An MCP that provides chat message analytics and trends.",
+      "author": "Another Developer",
+      "lang": "JavaScript",
+      "license": "Apache-2.0",
+      "entrypoint": "index.js",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/dev/chat-analytics"
+      },
+      "meta": {
+        "created_at": "2025-09-10T09:15:12Z",
+        "updated_at": "2025-09-15T08:03:27Z"
+      }
+    }
+  ]
+}
