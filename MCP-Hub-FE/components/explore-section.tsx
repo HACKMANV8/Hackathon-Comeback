@@ -87,15 +87,10 @@ export default function ExploreSection() {
         viewport={{ once: true }}
       >
         <div className="flex items-center justify-between mb-12">
-          <div className="flex items-center gap-3">
-            <h2 className="text-3xl font-bold text-white">Explore</h2>
-            <span className="bg-cyan-500/20 text-cyan-300 px-3 py-1 rounded-full text-sm font-semibold">
-              1000
-            </span>
-          </div>
+          <h2 className="text-3xl font-bold text-white">Explore</h2>
           <a
             href="/explore"
-            className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1"
+            className="text-sm font-medium text-gray-300/90 hover:text-white transition-colors duration-200 flex items-center gap-2"
           >
             View all <span>→</span>
           </a>
@@ -106,8 +101,7 @@ export default function ExploreSection() {
           <div
             ref={scrollContainer}
             onScroll={handleScroll}
-            className="flex gap-6 overflow-x-auto scroll-smooth pb-4"
-            style={{ scrollBehavior: "smooth", scrollbarWidth: "none" }}
+            className="flex gap-6 overflow-x-auto scroll-smooth py-2 pb-4 hide-scrollbar"
           >
             {tools.map((tool, index) => (
               <motion.div
@@ -116,17 +110,19 @@ export default function ExploreSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
+                className="w-[340px] flex-shrink-0"
               >
                 <ToolCard tool={tool} />
               </motion.div>
             ))}
           </div>
 
-          {/* Navigation Arrows */}
+          {/* Navigation Arrows - Enhanced */}
           {canScrollLeft && (
             <button
               onClick={() => scroll("left")}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 bg-cyan-500/20 hover:bg-cyan-500/40 text-white p-2 rounded-full transition-colors z-20"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white p-3 rounded-full transition-all duration-200 z-20 backdrop-blur-sm"
+              aria-label="Scroll left"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
@@ -134,7 +130,8 @@ export default function ExploreSection() {
           {canScrollRight && (
             <button
               onClick={() => scroll("right")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-cyan-500/20 hover:bg-cyan-500/40 text-white p-2 rounded-full transition-colors z-20"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white p-3 rounded-full transition-all duration-200 z-20 backdrop-blur-sm"
+              aria-label="Scroll right"
             >
               <ChevronRight className="w-5 h-5" />
             </button>

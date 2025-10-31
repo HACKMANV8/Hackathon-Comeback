@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { AlertCircle, ChevronDown, Copy } from "lucide-react";
+import { Terminal, Copy, Code } from "lucide-react";
 import { useState } from "react";
 
 interface ServerDetailProps {
@@ -15,30 +15,58 @@ interface ServerDetailProps {
     tools: Array<{
       name: string;
       description: string;
+      parameters?: Array<{
+        name: string;
+        type: string;
+        required: boolean;
+        description: string;
+      }>;
     }>;
     connectionUrl: string;
     tags: string[];
     clients: {
       auto: string[];
       json: string[];
-      typescript: string[];
-      python: string[];
     };
   };
 }
 
-export default function ServerDetail({ server }: ServerDetailProps) {
-  const [expandedTool, setExpandedTool] = useState<number | null>(0);
-  const [activeTab, setActiveTab] = useState<
-    "auto" | "json" | "typescript" | "python"
-  >("auto");
-  const [copied, setCopied] = useState(false);
+// Supported clients with icons
+const supportedClients = {
+  auto: [
+    { name: "VS Code", icon: "💻" },
+    { name: "Cursor", icon: "⚡" },
+    { name: "Windsurf", icon: "🌊" },
+    { name: "Claude Desktop", icon: "🧠" },
+    { name: "ChatGPT", icon: "🤖" },
+    { name: "Gemini", icon: "✨" },
+  ],
+  json: [
+    { name: "VS Code", icon: "💻" },
+    { name: "Cursor", icon: "⚡" },
+    { name: "Windsurf", icon: "🌊" },
+    { name: "Claude Desktop", icon: "🧠" },
+    { name: "ChatGPT", icon: "🤖" },
+    { name: "Gemini", icon: "✨" },
+  ],
+};
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(server.connectionUrl);
+export default function ServerDetail({ server }: ServerDetailProps) {
+  const [activeTab, setActiveTab] = useState<"auto" | "json">("auto");
+  const [copied, setCopied] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const pullCommand = `mcphub pull ${server.handle}`;
+
+  const copyCommand = () => {
+    navigator.clipboard.writeText(pullCommand);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const filteredClients = supportedClients[activeTab].filter(client =>
+    client.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <motion.div
@@ -47,53 +75,45 @@ export default function ServerDetail({ server }: ServerDetailProps) {
       transition={{ duration: 0.6 }}
       className="px-6 py-12 max-w-7xl mx-auto relative z-10"
     >
-      {/* Server Header */}
-      <div className="mb-12 pb-8 border-b border-cyan-900/30">
-        <div className="flex items-start justify-between mb-6">
+      {/* Server Header - Centered */}
+      <div className="mb-12 pb-8 border-b border-white/10">
+        <div className="flex flex-col items-center text-center mb-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex items-start gap-4"
+            className="flex flex-col items-center"
           >
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-4xl">
+            <div className="w-20 h-20 rounded-xl bg-white/5 flex items-center justify-center text-5xl mb-4">
               {server.icon}
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <h1 className="text-4xl font-bold text-white">{server.name}</h1>
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <h1 className="text-4xl font-bold text-white/95">{server.name}</h1>
                 <span className="text-gray-500">⊚</span>
               </div>
-              <p className="text-gray-400 text-sm">{server.handle}</p>
-              <p className="text-gray-500 text-xs mt-2">
+              <p className="text-gray-400/80 text-sm">{server.handle}</p>
+              <p className="text-gray-500/70 text-xs mt-2">
                 last deployed {server.lastDeployed}
               </p>
             </div>
           </motion.div>
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/50"
-          >
-            Explore capabilities +
-          </motion.button>
         </div>
 
-        {/* Tags */}
+        {/* Tags - Centered */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex items-center gap-2"
+          className="flex items-center justify-center gap-2 flex-wrap"
         >
           {server.tags.map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center gap-1 text-xs text-gray-400 bg-gray-900/50 px-3 py-1 rounded-full border border-gray-800/50"
+              className="inline-flex items-center gap-1.5 text-xs text-gray-400/80 bg-white/5 px-3 py-1.5 rounded-full border border-white/10"
             >
               {tag === "Remote" && (
-                <span className="w-2 h-2 rounded-full bg-cyan-500" />
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400/80" />
               )}
               {tag === "Open Source" && <span>✓</span>}
               {tag === "2 tools" && <span>⚙</span>}
@@ -116,63 +136,63 @@ export default function ServerDetail({ server }: ServerDetailProps) {
           <section>
             <div className="flex items-center gap-2 mb-6">
               <span className="text-2xl">ℹ</span>
-              <h2 className="text-2xl font-bold text-white">About</h2>
+              <h2 className="text-2xl font-bold text-white/95">About</h2>
             </div>
-            <p className="text-gray-300 leading-relaxed">{server.about}</p>
+            <p className="text-gray-300/80 leading-relaxed">{server.about}</p>
           </section>
 
-          {/* Tools Section */}
+          {/* Tools Section - Improved */}
           <section>
             <div className="flex items-center gap-2 mb-6">
-              <span className="text-2xl">⚙</span>
-              <h2 className="text-2xl font-bold text-white">Tools</h2>
+              <Code className="w-6 h-6 text-cyan-400" />
+              <h2 className="text-2xl font-bold text-white/95">Tools</h2>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {server.tools.map((tool, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="border border-gray-800 rounded-lg overflow-hidden bg-gray-900/30 hover:bg-gray-900/50 transition-colors"
+                  className="p-6 border border-white/10 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/20 transition-all duration-200"
                 >
-                  <button
-                    onClick={() =>
-                      setExpandedTool(expandedTool === index ? null : index)
-                    }
-                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-800/50 transition-colors"
-                  >
-                    <h3 className="text-white font-semibold text-left">
-                      {tool.name}
-                    </h3>
-                    <ChevronDown
-                      className={`w-5 h-5 text-gray-400 transition-transform ${expandedTool === index ? "rotate-180" : ""}`}
-                    />
-                  </button>
-                  {expandedTool === index && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="px-6 pb-4 border-t border-gray-800"
-                    >
-                      <p className="text-gray-400 text-sm">
-                        {tool.description}
+                  <h3 className="text-lg font-semibold text-white/95 mb-3">
+                    {tool.name}
+                  </h3>
+                  <p className="text-gray-400/80 text-sm leading-relaxed mb-4">
+                    {tool.description}
+                  </p>
+                  
+                  {/* Parameters if available */}
+                  {tool.parameters && tool.parameters.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-white/5">
+                      <p className="text-xs font-semibold text-gray-400/80 mb-3 uppercase tracking-wider">
+                        Parameters
                       </p>
-                    </motion.div>
+                      <div className="space-y-2">
+                        {tool.parameters.map((param, idx) => (
+                          <div key={idx} className="flex items-start gap-3 text-sm">
+                            <code className="px-2 py-1 bg-white/5 rounded text-cyan-400 font-mono text-xs">
+                              {param.name}
+                            </code>
+                            <span className={`px-2 py-1 rounded text-xs ${
+                              param.required 
+                                ? "bg-orange-500/20 text-orange-400" 
+                                : "bg-gray-500/20 text-gray-400"
+                            }`}>
+                              {param.required ? "required" : "optional"}
+                            </span>
+                            <span className="px-2 py-1 bg-white/5 rounded text-gray-400 text-xs">
+                              {param.type}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </motion.div>
               ))}
             </div>
-            <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="mt-8 px-6 py-3 bg-gray-900/50 hover:bg-gray-800 text-gray-300 rounded-lg font-semibold border border-gray-800 transition-colors"
-            >
-              Explore capabilities +
-            </motion.button>
           </section>
         </motion.div>
 
@@ -184,104 +204,92 @@ export default function ServerDetail({ server }: ServerDetailProps) {
           className="col-span-1"
         >
           <div className="flex items-center gap-2 mb-6">
-            <span className="text-2xl">🔗</span>
-            <h2 className="text-2xl font-bold text-white">Connect</h2>
-            <button className="ml-auto text-gray-400 hover:text-white transition-colors">
-              <span className="text-xl">⚙</span>
-            </button>
+            <Terminal className="w-6 h-6 text-cyan-400" />
+            <h2 className="text-2xl font-bold text-white/95">Connect</h2>
           </div>
 
-          {/* Connection URL */}
+          {/* Run Command */}
           <div className="mb-8">
-            <p className="text-xs text-gray-400 mb-3 uppercase tracking-wider">
-              Get connection URL
+            <p className="text-xs text-gray-400/80 mb-3 uppercase tracking-wider">
+              Run Command
             </p>
             <div className="relative">
-              <input
-                type="text"
-                value={server.connectionUrl}
-                readOnly
-                className="w-full bg-gray-900/50 border border-gray-800 rounded-lg px-4 py-3 text-gray-300 text-sm font-mono"
-              />
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <code className="text-cyan-400 font-mono text-sm break-all">
+                  {pullCommand}
+                </code>
+              </div>
               <button
-                onClick={copyToClipboard}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-cyan-400 transition-colors"
+                onClick={copyCommand}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg transition-all duration-200"
+                title="Copy command"
               >
-                <Copy className="w-4 h-4" />
+                <Copy className="w-4 h-4 text-gray-300" />
               </button>
-              {copied && <p className="text-xs text-cyan-400 mt-2">Copied!</p>}
+              {copied && (
+                <motion.p
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-xs text-cyan-400 mt-2"
+                >
+                  Copied!
+                </motion.p>
+              )}
             </div>
           </div>
 
-          {/* Warning */}
-          <div className="flex items-start gap-2 p-4 bg-orange-900/20 border border-orange-800/50 rounded-lg mb-8">
-            <AlertCircle className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-orange-200">
-              Client doesn't support OAuth yet or link isn't working?{" "}
-              <a
-                href="#"
-                className="text-orange-400 hover:text-orange-300 underline"
-              >
-                Get URL with keys instead
-              </a>
-            </p>
-          </div>
-
           {/* Or add to your client */}
-          <p className="text-sm text-gray-400 mb-6">Or add to your client</p>
+          <p className="text-sm text-gray-400/80 mb-6">Or add to your client</p>
 
-          {/* Tabs */}
-          <div className="flex gap-1 mb-6 border-b border-gray-800">
-            {(["auto", "json", "typescript", "python"] as const).map((tab) => (
+          {/* Tabs - Only Auto and JSON */}
+          <div className="flex gap-2 mb-6 border-b border-white/10">
+            {(["auto", "json"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-4 py-3 text-sm font-semibold transition-colors border-b-2 ${
                   activeTab === tab
-                    ? "text-white border-cyan-500"
-                    : "text-gray-400 border-transparent hover:text-gray-300"
+                    ? "text-white/95 border-cyan-400"
+                    : "text-gray-400/80 border-transparent hover:text-gray-300"
                 }`}
               >
                 {tab === "auto" && "⚡ Auto"}
                 {tab === "json" && "{} JSON"}
-                {tab === "typescript" && "TS TypeScript"}
-                {tab === "python" && "🐍 Python"}
               </button>
             ))}
           </div>
 
-          {/* Clients List */}
-          <div className="space-y-3">
+          {/* Search Clients */}
+          <div className="mb-4">
             <input
               type="text"
-              placeholder="Search clients"
-              className="w-full bg-gray-900/50 border border-gray-800 rounded-lg px-4 py-2 text-sm text-gray-300 placeholder-gray-500 mb-4"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search clients..."
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-300/90 placeholder-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300"
             />
-            {server.clients[activeTab] &&
-            server.clients[activeTab].length > 0 ? (
-              server.clients[activeTab].map((client, index) => (
+          </div>
+
+          {/* Clients List */}
+          <div className="space-y-3">
+            {filteredClients.length > 0 ? (
+              filteredClients.map((client, index) => (
                 <motion.div
-                  key={client}
+                  key={client.name}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
-                  className="flex items-center gap-3 p-3 bg-gray-900/30 rounded-lg hover:bg-gray-900/50 transition-colors cursor-pointer"
+                  className="flex items-center gap-3 p-3 bg-white/[0.02] rounded-xl hover:bg-white/[0.04] border border-white/10 hover:border-white/20 transition-all duration-200 cursor-pointer"
                 >
-                  <span className="text-lg">
-                    {client === "ChatGPT" && "🤖"}
-                    {client === "Poke" && "👉"}
-                    {client === "Claude Desktop" && "🧠"}
-                    {client === "Claude Code" && "💻"}
-                    {client === "Cursor" && "⚡"}
-                  </span>
-                  <span className="text-gray-300 text-sm font-medium">
-                    {client}
+                  <span className="text-xl">{client.icon}</span>
+                  <span className="text-gray-300/90 text-sm font-medium">
+                    {client.name}
                   </span>
                 </motion.div>
               ))
             ) : (
-              <p className="text-gray-500 text-sm py-4 text-center">
-                No clients available for this tab
+              <p className="text-gray-500/80 text-sm py-4 text-center">
+                No clients found
               </p>
             )}
           </div>

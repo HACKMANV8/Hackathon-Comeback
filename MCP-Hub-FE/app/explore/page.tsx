@@ -183,7 +183,34 @@ const allTools = [
   },
 ];
 
+import { Search } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+
 export default function ExplorePage() {
+  const searchParams = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+
+  useEffect(() => {
+    const search = searchParams.get("search");
+    if (search) {
+      setSearchQuery(search);
+    }
+  }, [searchParams]);
+
+  const filteredTools = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return allTools;
+    }
+    const query = searchQuery.toLowerCase();
+    return allTools.filter(
+      (tool) =>
+        tool.name.toLowerCase().includes(query) ||
+        tool.handle.toLowerCase().includes(query) ||
+        tool.description.toLowerCase().includes(query)
+    );
+  }, [searchQuery]);
+
   return (
     <div
       className="min-h-screen bg-black overflow-x-hidden"
@@ -192,31 +219,68 @@ export default function ExplorePage() {
       }}
     >
       <Header />
-      <main className="pt-20 px-6 max-w-7xl mx-auto">
+      <main className="pt-32 px-6 max-w-7xl mx-auto pb-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="py-12"
         >
-          <div className="flex items-center gap-3 mb-12">
-            <h1 className="text-4xl font-bold text-white">Explore All MCP Servers</h1>
-            <span className="bg-cyan-500/20 text-cyan-300 px-4 py-2 rounded-full text-lg font-semibold">
-              {allTools.length}
-            </span>
+          {/* Header Section */}
+          <div className="mb-12">
+            <h1 className="text-5xl font-bold text-white mb-4">
+              Explore All MCP Servers
+            </h1>
+            <p className="text-gray-400/80 text-lg">
+              Discover and connect powerful tools to your AI agents
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {allTools.map((tool, index) => (
-              <motion.div
-                key={tool.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.05 }}
-              >
-                <ToolCard tool={tool} />
-              </motion.div>
-            ))}
+          {/* Search Bar - Enhanced */}
+          <div className="relative max-w-2xl mb-8">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search for tools..."
+              className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300"
+            />
+            <Search className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+          </div>
+
+          {/* Results count */}
+          <div className="flex items-center justify-between mb-8">
+            <p className="text-sm font-medium text-gray-400/80">
+              {filteredTools.length} {filteredTools.length === 1 ? "server" : "servers"} found
+            </p>
+          </div>
+
+          {/* Tools Grid - Improved spacing */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredTools.length > 0 ? (
+              filteredTools.map((tool, index) => (
+                <motion.div
+                  key={tool.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: Math.min(index * 0.03, 0.3) }}
+                >
+                  <ToolCard tool={tool} />
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-32">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4">
+                  <Search className="w-8 h-8 text-gray-500" />
+                </div>
+                <p className="text-xl text-gray-400 mb-2">
+                  No servers found
+                </p>
+                <p className="text-sm text-gray-500">
+                  Try searching with different keywords
+                </p>
+              </div>
+            )}
           </div>
         </motion.div>
       </main>
