@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Copy, Terminal } from "lucide-react";
 import { useState } from "react";
 import ServerDetailTabs from "./server-detail-tabs";
+import RazorpayPayment from "./razorpay-payment";
 
 interface ServerDetailProps {
   server: {
@@ -52,6 +53,10 @@ interface ServerDetailProps {
       domain: string;
     };
     security?: any;
+    pricing?: {
+      currency: string;
+      amount: number;
+    };
   };
 }
 
@@ -78,6 +83,25 @@ export default function ServerDetail({ server }: ServerDetailProps) {
   const [activeTab, setActiveTab] = useState<"auto" | "json">("auto");
   const [copied, setCopied] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isPurchased, setIsPurchased] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+
+  const isPaidServer =
+    server.pricing &&
+    server.pricing.currency &&
+    server.pricing.amount &&
+    server.pricing.amount > 0;
+
+  const handlePaymentSuccess = (paymentId: string) => {
+    setIsPurchased(true);
+    setPaymentError(null);
+    alert(`Payment successful! Payment ID: ${paymentId}`);
+  };
+
+  const handlePaymentError = (error: string) => {
+    setPaymentError(error);
+    alert(`Payment failed: ${error}`);
+  };
 
   const pullCommand = `mcphub pull ${server.name}`;
 
@@ -169,36 +193,68 @@ export default function ServerDetail({ server }: ServerDetailProps) {
             <h2 className="text-2xl font-bold text-white/95">Connect</h2>
           </div>
 
-          <div className="mb-8">
-            <p className="text-xs text-gray-400/80 mb-3 uppercase tracking-wider">
-              Run Command
-            </p>
-            <div className="relative">
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                <code className="text-cyan-400 font-mono text-sm break-all">
-                  {pullCommand}
-                </code>
-              </div>
-              <button
-                onClick={copyCommand}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg transition-all duration-200"
-                title="Copy command"
-              >
-                <Copy className="w-4 h-4 text-gray-300" />
-              </button>
-              {copied && (
-                <motion.p
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-xs text-cyan-400 mt-2"
-                >
-                  Copied!
-                </motion.p>
+          {/* Payment Section for Paid Servers */}
+          {isPaidServer && !isPurchased && (
+            <div className="mb-8 p-4 bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-xl">
+              <p className="text-sm text-amber-400 mb-4 font-medium">
+                🔒 This is a premium server
+              </p>
+              <RazorpayPayment
+                serverName={server.name}
+                amount={server.pricing!.amount}
+                currency={server.pricing!.currency}
+                onSuccess={handlePaymentSuccess}
+                onError={handlePaymentError}
+              />
+              {paymentError && (
+                <p className="text-xs text-red-400 mt-2">{paymentError}</p>
               )}
             </div>
-          </div>
+          )}
 
-          <p className="text-sm text-gray-400/80 mb-6">Or add to your client</p>
+          {/* Show connection details only for free servers or after purchase */}
+          {(!isPaidServer || isPurchased) && (
+            <>
+              <div className="mb-8">
+                <p className="text-xs text-gray-400/80 mb-3 uppercase tracking-wider">
+                  Run Command
+                </p>
+                <div className="relative">
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <code className="text-cyan-400 font-mono text-sm break-all">
+                      {pullCommand}
+                    </code>
+                  </div>
+                  <button
+                    onClick={copyCommand}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg transition-all duration-200"
+                    title="Copy command"
+                  >
+                    <Copy className="w-4 h-4 text-gray-300" />
+                  </button>
+                  {copied && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-xs text-cyan-400 mt-2"
+                    >
+                      Copied!
+                    </motion.p>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-sm text-gray-400/80 mb-6">
+                Or add to your client
+              </p>
+            </>
+          )}
+
+          {isPaidServer && !isPurchased && (
+            <p className="text-sm text-gray-500 mb-6 text-center">
+              Purchase required to access connection details
+            </p>
+          )}
 
           <div className="flex gap-2 mb-6 border-b border-white/10">
             {(["auto", "json"] as const).map((tab) => (

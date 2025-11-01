@@ -20,47 +20,61 @@ export interface ServerResponse {
     currency: string;
     amount: number;
   };
-  sonarqube?: {
-    project_key: string;
-    analysis_date: string;
-    sonarcloud_url: string;
+  security_report?: {
+    metadata: {
+      repository: string;
+      repo_url: string;
+      scan_date: string;
+      scanners_used: string[];
+    };
     summary: {
+      total_issues_all_scanners: number;
+      critical_issues: number;
+      sonarcloud_url: string;
+      scan_passed: boolean;
+    };
+    sonarqube: {
       total_issues: number;
       bugs: number;
       vulnerabilities: number;
       code_smells: number;
       security_hotspots: number;
-    };
-    metrics: {
-      coverage: string;
-      bugs: string;
+      quality_gate: string;
       reliability_rating: string;
-      complexity: string;
-      code_smells: string;
-      duplicated_lines_density: string;
       security_rating: string;
-      ncloc: string;
-      vulnerabilities: string;
-      security_hotspots: string;
-      sqale_rating: string;
+      maintainability_rating: string;
+      coverage: number;
+      duplications: number;
+      lines_of_code: number;
     };
-    issues?: {
-      by_severity: {
-        blocker: number;
-        critical: number;
-        major: number;
-        minor: number;
-        info: number;
-      };
-      details: {
-        BLOCKER: Array<any>;
-        CRITICAL: Array<any>;
-        MAJOR: Array<any>;
-        MINOR: Array<any>;
-        INFO: Array<any>;
-      };
+    gitguardian: {
+      scan_passed: boolean;
+      total_secrets: number;
+      secrets: any[];
+      error: string | null;
     };
-    security_hotspots?: Array<any>;
+    bandit: {
+      scan_passed: boolean;
+      total_issues: number;
+      severity_counts: {
+        high: number;
+        medium: number;
+        low: number;
+      };
+      total_lines_scanned: number;
+      issues: Array<{
+        title: string;
+        severity: string;
+        confidence: string;
+        file: string;
+        line_number: number;
+        test_id: string;
+        test_name: string;
+        cwe: number;
+      }>;
+      error: string | null;
+    };
+    recommendations: string[];
   };
 }
 

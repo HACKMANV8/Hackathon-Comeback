@@ -67,6 +67,9 @@ export default function ServerPage() {
     lastDeployed: "Recently",
     icon: "📦",
     about: server.description,
+    downloads: 1250,
+    rating: 4.7,
+    reviewCount: 35,
     tools: server.tools?.names
       ? server.tools.names.map((toolName) => ({
           name: toolName,
@@ -91,8 +94,13 @@ export default function ServerPage() {
       typescript: [],
       python: [],
     },
-    qualityScore: server.sonarqube
-      ? 100 - Math.min(100, server.sonarqube.summary.total_issues * 5)
+    qualityScore: server.security_report
+      ? Math.max(
+          0,
+          100 -
+            server.security_report.summary.total_issues_all_scanners * 3 -
+            server.security_report.summary.critical_issues * 10,
+        )
       : undefined,
     monthlyToolCalls: undefined,
     deployedFrom: server.repository
@@ -101,20 +109,23 @@ export default function ServerPage() {
           commit: server.repository.url.split("/").pop()?.slice(0, 7) || "N/A",
         }
       : undefined,
-    uptime: server.sonarqube
-      ? parseFloat(server.sonarqube.metrics.reliability_rating) <= 2
-        ? 99.5
-        : 95.0
+    uptime: server.security_report
+      ? server.security_report.summary.scan_passed
+        ? 99.9
+        : server.security_report.summary.critical_issues === 0
+          ? 99.5
+          : 95.0
       : undefined,
-    latency: server.sonarqube
+    latency: server.security_report
       ? {
-          p95: parseFloat(server.sonarqube.metrics.complexity) / 10,
+          p95:
+            server.security_report.sonarqube.lines_of_code > 1000 ? 250 : 150,
         }
       : undefined,
     license: server.license,
     isLocal: false,
-    publishedDate: server.sonarqube
-      ? new Date(server.sonarqube.analysis_date).toLocaleDateString()
+    publishedDate: server.security_report
+      ? new Date(server.security_report.metadata.scan_date).toLocaleDateString()
       : undefined,
     pricing: server.pricing,
     sourceCode: {
@@ -129,29 +140,7 @@ export default function ServerPage() {
         .replace("http://", "")
         .split("/")[0],
     },
-    security: server.sonarqube
-      ? {
-          summary: server.sonarqube.summary,
-          metrics: server.sonarqube.metrics,
-          issues: server.sonarqube.issues
-            ? {
-                by_severity: {
-                  critical: server.sonarqube.issues.by_severity.critical || 0,
-                  major: server.sonarqube.issues.by_severity.major || 0,
-                  minor: server.sonarqube.issues.by_severity.minor || 0,
-                },
-                details: {
-                  CRITICAL: server.sonarqube.issues.details.CRITICAL || [],
-                  MAJOR: server.sonarqube.issues.details.MAJOR || [],
-                },
-              }
-            : {
-                by_severity: { critical: 0, major: 0, minor: 0 },
-                details: { CRITICAL: [], MAJOR: [] },
-              },
-          security_hotspots: server.sonarqube.security_hotspots || [],
-        }
-      : undefined,
+    security: server.security_report || undefined,
   };
 
   return (

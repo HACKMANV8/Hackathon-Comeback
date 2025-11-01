@@ -1,10 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Code, Info, Shield } from "lucide-react";
+import { Code, Info, Shield, Star } from "lucide-react";
 import { useState } from "react";
 import SecurityReport from "./security-report";
 import ServerDetailsCard from "./server-details-card";
+import ReviewsSection from "./reviews-section";
 
 interface Tool {
   name: string;
@@ -19,6 +20,7 @@ interface Tool {
 
 interface ServerDetailTabsProps {
   server: {
+    name: string;
     about: string;
     tools: Tool[];
     qualityScore?: number;
@@ -34,6 +36,9 @@ interface ServerDetailTabsProps {
     license?: string;
     isLocal?: boolean;
     publishedDate?: string;
+    downloads?: number;
+    rating?: number;
+    reviewCount?: number;
     sourceCode?: {
       platform: string;
       url: string;
@@ -44,10 +49,14 @@ interface ServerDetailTabsProps {
       domain: string;
     };
     security?: any;
+    pricing?: {
+      currency: string;
+      amount: number;
+    };
   };
 }
 
-type TabType = "overview" | "security";
+type TabType = "overview" | "security" | "reviews";
 
 export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
   const [activeTab, setActiveTab] = useState<TabType>("overview");
@@ -62,6 +71,11 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
       id: "security" as TabType,
       label: "Security",
       icon: Shield,
+    },
+    {
+      id: "reviews" as TabType,
+      label: "Reviews",
+      icon: Star,
     },
   ];
 
@@ -118,12 +132,20 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
 
               {/* Tools Section */}
               <section>
-                <div className="flex items-center gap-2 mb-6">
+                <div className="flex items-center gap-2 mb-3">
                   <Code className="w-6 h-6 text-cyan-400" />
                   <h3 className="text-xl font-semibold text-white/95">Tools</h3>
                   <span className="px-2 py-0.5 bg-cyan-400/20 text-cyan-400 text-xs rounded-full">
                     {server.tools.length}
                   </span>
+                </div>
+                <div className="mb-6 px-4 py-2.5 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                  <p className="text-sm text-blue-400/90 flex items-center gap-2">
+                    <span className="text-base">ℹ️</span>
+                    All servers have a{" "}
+                    <span className="font-semibold">100 tool calls/month</span>{" "}
+                    limit
+                  </p>
                 </div>
                 <div className="space-y-4">
                   {server.tools.map((tool, index) => (
@@ -187,6 +209,43 @@ export default function ServerDetailTabs({ server }: ServerDetailTabsProps) {
 
         {activeTab === "security" && (
           <SecurityReport security={server.security} />
+        )}
+
+        {activeTab === "reviews" && (
+          <ReviewsSection
+            serverName={server.name}
+            averageRating={server.rating}
+            totalReviews={server.reviewCount}
+            reviews={[
+              {
+                id: "1",
+                author: "John Doe",
+                rating: 5,
+                date: "2025-10-15",
+                comment:
+                  "Excellent server! Very reliable and easy to integrate. The tools provided are exactly what I needed for my project.",
+                helpful: 12,
+              },
+              {
+                id: "2",
+                author: "Jane Smith",
+                rating: 4,
+                date: "2025-10-20",
+                comment:
+                  "Great functionality overall. Documentation could be improved, but the server performs well.",
+                helpful: 8,
+              },
+              {
+                id: "3",
+                author: "Mike Johnson",
+                rating: 5,
+                date: "2025-10-25",
+                comment:
+                  "Amazing work! This server has been running flawlessly in production for weeks. Highly recommended.",
+                helpful: 15,
+              },
+            ]}
+          />
         )}
       </motion.div>
     </div>

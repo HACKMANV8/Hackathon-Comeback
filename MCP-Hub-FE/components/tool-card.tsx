@@ -18,6 +18,20 @@ interface ToolCardProps {
   };
 }
 
+const getCurrencySymbol = (currency: string): string => {
+  const symbols: { [key: string]: string } = {
+    USD: "$",
+    EUR: "€",
+    GBP: "£",
+    INR: "₹",
+    JPY: "¥",
+    CNY: "¥",
+    AUD: "A$",
+    CAD: "C$",
+  };
+  return symbols[currency.toUpperCase()] || currency;
+};
+
 export default function ToolCard({ tool }: ToolCardProps) {
   return (
     <Link href={`/server/${encodeURIComponent(tool.name)}`} className="block h-full">
@@ -59,15 +73,16 @@ export default function ToolCard({ tool }: ToolCardProps) {
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400/70" />
                   {tool.lang}
                 </span>
-                {tool.pricing && tool.pricing.currency && tool.pricing.amount ? (
-                  <span className="px-2 py-1 bg-amber-500/20 text-amber-400 text-xs font-semibold rounded">
-                    {tool.pricing.currency} {tool.pricing.amount}
-                  </span>
-                ) : (
-                  <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs font-semibold rounded">
-                    FREE
-                  </span>
-                )}
+      {tool.pricing && tool.pricing.currency && tool.pricing.amount ? (
+        <span className="px-2 py-1 bg-amber-500/20 text-amber-400 text-xs font-semibold rounded">
+          {getCurrencySymbol(tool.pricing.currency)}
+          {tool.pricing.amount}
+        </span>
+      ) : (
+        <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs font-semibold rounded">
+          FREE
+        </span>
+      )}
               </div>
               <span className="text-xs font-medium text-gray-400/70">
                 {tool.license}
