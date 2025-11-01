@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import router
+from app.payment_routes import payment_router
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -17,3 +18,4 @@ app.add_middleware(
 )
 
 app.include_router(router)
+app.include_router(payment_router)

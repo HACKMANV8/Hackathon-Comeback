@@ -1,9 +1,13 @@
 import os
 import json
 import boto3
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
+from app.models import Repository
+from pydantic import BaseModel, Field
+from typing import Optional
 
 load_dotenv()
 
@@ -18,6 +22,25 @@ s3_client = boto3.client(
     aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
     aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
 )
+
+
+class Pricing(BaseModel):
+    currency: str
+    amount: float
+
+
+class CreateServerRequest(BaseModel):
+    name: str
+    version: str = "1.0.0"
+    description: str
+    author: str
+    lang: str
+    license: str
+    entrypoint: str
+    repository: Repository
+    pricing: Optional[Pricing] = None
+    tools: Optional[dict] = None
+    sonarqube: Optional[dict] = None
 
 
 @router.get("/servers/{server_name}")
@@ -78,9 +101,13 @@ async def list_servers():
             if "pricing" in server and server["pricing"]:
                 server_info["pricing"] = server["pricing"]
             
-            # Add sonarqube if exists
+            # Add sonarqube if exists (legacy support)
             if "sonarqube" in server and server["sonarqube"]:
                 server_info["sonarqube"] = server["sonarqube"]
+            
+            # Add security_report if exists (new format)
+            if "security_report" in server and server["security_report"]:
+                server_info["security_report"] = server["security_report"]
             
             server_list.append(server_info)
         
@@ -91,5 +118,80 @@ async def list_servers():
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching servers: {str(e)}")
+
+
+@router.post("/servers")
+async def create_server(server: CreateServerRequest):
+    """Create a new MCP server and add it to S3"""
+    try:
+        # Get existing data from S3
+        try:
+            response = s3_client.get_object(Bucket=S3_BUCKET, Key=S3_KEY)
+            file_data = json.loads(response['Body'].read().decode('utf-8'))
+        except s3_client.exceptions.NoSuchKey:
+            # If file doesn't exist, create new structure
+            file_data = {"servers": []}
+        
+        # Check if server with same name already exists
+        servers = file_data.get("servers", [])
+        if any(s["name"] == server.name for s in servers):
+            raise HTTPException(status_code=400, detail=f"Server '{server.name}' already exists")
+        
+        # Create new server object
+        new_server = {
+            "name": server.name,
+            "version": server.version,
+            "description": server.description,
+            "author": server.author,
+            "lang": server.lang,
+            "license": server.license,
+            "entrypoint": server.entrypoint,
+            "repository": {
+                "type": server.repository.type,
+                "url": server.repository.url
+            },
+            "meta": {
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+        
+        # Add optional fields
+        if server.pricing:
+            new_server["pricing"] = {
+                "currency": server.pricing.currency,
+                "amount": server.pricing.amount
+            }
+        
+        if server.tools:
+            new_server["tools"] = server.tools
+        
+        if server.sonarqube:
+            new_server["sonarqube"] = server.sonarqube
+        
+        # Add to servers list
+        servers.append(new_server)
+        file_data["servers"] = servers
+        
+        # Upload updated data to S3
+        s3_client.put_object(
+            Bucket=S3_BUCKET,
+            Key=S3_KEY,
+            Body=json.dumps(file_data, indent=2),
+            ContentType='application/json'
+        )
+        
+        return JSONResponse(
+            content={
+                "message": "Server created successfully",
+                "server": new_server
+            },
+            status_code=201
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating server: {str(e)}")
 
 
