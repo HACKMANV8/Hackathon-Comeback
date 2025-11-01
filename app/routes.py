@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from app.models import Repository
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional
 
 load_dotenv()
@@ -38,7 +38,7 @@ class CreateServerRequest(BaseModel):
     license: str
     entrypoint: str
     repository: Repository
-    pricing: Optional[Pricing] = None
+    pricing: Pricing
     tools: Optional[dict] = None
     sonarqube: Optional[dict] = None
 
@@ -97,9 +97,12 @@ async def list_servers():
             if "tools" in server and server["tools"]:
                 server_info["tools"] = server["tools"]
             
-            # Add pricing if exists
+            # Add pricing (always include, or default to free)
             if "pricing" in server and server["pricing"]:
                 server_info["pricing"] = server["pricing"]
+            else:
+                # Default to free if pricing not specified (for legacy servers)
+                server_info["pricing"] = {"currency": "", "amount": 0}
             
             # Add sonarqube if exists (legacy support)
             if "sonarqube" in server and server["sonarqube"]:
@@ -156,12 +159,11 @@ async def create_server(server: CreateServerRequest):
             }
         }
         
-        # Add optional fields
-        if server.pricing:
-            new_server["pricing"] = {
-                "currency": server.pricing.currency,
-                "amount": server.pricing.amount
-            }
+        # Add pricing (required field)
+        new_server["pricing"] = {
+            "currency": server.pricing.currency,
+            "amount": server.pricing.amount
+        }
         
         if server.tools:
             new_server["tools"] = server.tools

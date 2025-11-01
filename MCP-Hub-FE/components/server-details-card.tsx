@@ -7,14 +7,12 @@ import {
   Calendar,
   Clock,
   Code,
-  Download,
   ExternalLink,
   GitBranch,
   Globe,
   Home,
   Info,
   Scale,
-  Star,
   TrendingUp,
 } from "lucide-react";
 
@@ -33,10 +31,7 @@ interface ServerDetailsCardProps {
     license?: string;
     isLocal?: boolean;
     publishedDate?: string;
-    downloads?: number;
-    rating?: number;
-    reviewCount?: number;
-    pricing?: {
+    pricing: {
       currency: string;
       amount: number;
     };
@@ -51,20 +46,6 @@ interface ServerDetailsCardProps {
     };
   };
 }
-
-const getCurrencySymbol = (currency: string): string => {
-  const symbols: { [key: string]: string } = {
-    USD: "$",
-    EUR: "€",
-    GBP: "£",
-    INR: "₹",
-    JPY: "¥",
-    CNY: "¥",
-    AUD: "A$",
-    CAD: "C$",
-  };
-  return symbols[currency.toUpperCase()] || currency;
-};
 
 export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
   const formatNumber = (num: number) => {
@@ -188,48 +169,6 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
           </div>
         )}
 
-        {/* Downloads */}
-        {server.downloads !== undefined && (
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <Download className="w-4 h-4 text-gray-400/70" />
-              <p className="text-xs text-gray-400/70 uppercase tracking-wider">
-                Downloads
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-semibold text-white/95">
-                {formatNumber(server.downloads)}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Rating */}
-        {server.rating !== undefined && (
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <Star className="w-4 h-4 text-gray-400/70" />
-              <p className="text-xs text-gray-400/70 uppercase tracking-wider">
-                Rating
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                <span className="text-lg font-semibold text-white/95">
-                  {server.rating.toFixed(1)}
-                </span>
-              </div>
-              {server.reviewCount !== undefined && (
-                <span className="text-xs text-gray-400/70">
-                  ({formatNumber(server.reviewCount)} reviews)
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* License */}
         {server.license && (
           <div>
@@ -291,10 +230,11 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {server.pricing && server.pricing.currency && server.pricing.amount ? (
+            {server.pricing &&
+            server.pricing.currency &&
+            server.pricing.amount ? (
               <span className="px-3 py-1.5 bg-amber-500/20 text-amber-400 text-sm font-semibold rounded">
-                {getCurrencySymbol(server.pricing.currency)}
-                {server.pricing.amount}
+                {server.pricing.currency} {server.pricing.amount}
               </span>
             ) : (
               <span className="px-3 py-1.5 bg-green-500/20 text-green-400 text-sm font-semibold rounded">
@@ -355,4 +295,3 @@ export default function ServerDetailsCard({ server }: ServerDetailsCardProps) {
     </motion.div>
   );
 }
-

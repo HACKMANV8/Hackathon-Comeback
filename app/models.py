@@ -12,6 +12,11 @@ class Meta(BaseModel):
     updated_at: str
 
 
+class Pricing(BaseModel):
+    currency: str
+    amount: float
+
+
 class MCPInit(BaseModel):
     name: str
     version: str
@@ -21,4 +26,5 @@ class MCPInit(BaseModel):
     license: str
     entrypoint: str
     repository: Repository
+    pricing: Pricing
     meta: Optional[Meta] = None

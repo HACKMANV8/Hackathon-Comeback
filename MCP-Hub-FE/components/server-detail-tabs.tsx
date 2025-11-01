@@ -47,12 +47,12 @@ interface ServerDetailTabsProps {
     homepage?: {
       url: string;
       domain: string;
-    };
-    security?: any;
-    pricing?: {
-      currency: string;
-      amount: number;
-    };
+  };
+  security?: any;
+  pricing: {
+    currency: string;
+    amount: number;
+  };
   };
 }
 

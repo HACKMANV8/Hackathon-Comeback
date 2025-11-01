@@ -11,7 +11,7 @@ interface Server {
   description: string;
   lang: string;
   license: string;
-  pricing?: {
+  pricing: {
     currency: string;
     amount: number;
   };

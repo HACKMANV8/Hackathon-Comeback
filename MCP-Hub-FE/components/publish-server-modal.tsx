@@ -22,7 +22,7 @@ export interface ServerFormData {
     type: string;
     url: string;
   };
-  pricing?: {
+  pricing: {
     currency: string;
     amount: number;
   };
@@ -48,6 +48,10 @@ export default function PublishServerModal({
     repository: {
       type: "git",
       url: "",
+    },
+    pricing: {
+      currency: "",
+      amount: 0,
     },
     metadata: {
       tags: [],
@@ -259,24 +263,25 @@ export default function PublishServerModal({
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-300/90 mb-2">
-                          Currency
+                          Currency *
                         </label>
                         <select
-                          value={formData.pricing?.currency || ""}
+                          required
+                          value={formData.pricing.currency || ""}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              pricing: e.target.value
-                                ? {
-                                    currency: e.target.value,
-                                    amount: formData.pricing?.amount || 0,
-                                  }
-                                : undefined,
+                              pricing: {
+                                currency: e.target.value,
+                                amount: formData.pricing.amount || 0,
+                              },
                             })
                           }
                           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/90 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300"
                         >
-                          <option value="">Free</option>
+                          <option value="">
+                            Select Currency (or leave for Free)
+                          </option>
                           <option value="USD">USD</option>
                           <option value="EUR">EUR</option>
                           <option value="GBP">GBP</option>
@@ -285,27 +290,25 @@ export default function PublishServerModal({
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-300/90 mb-2">
-                          Amount
+                          Amount *
                         </label>
                         <input
                           type="number"
+                          required
                           min="0"
                           step="0.01"
-                          disabled={!formData.pricing?.currency}
-                          value={formData.pricing?.amount || ""}
+                          value={formData.pricing.amount || ""}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              pricing: formData.pricing?.currency
-                                ? {
-                                    currency: formData.pricing.currency,
-                                    amount: parseFloat(e.target.value) || 0,
-                                  }
-                                : undefined,
+                              pricing: {
+                                currency: formData.pricing.currency,
+                                amount: parseFloat(e.target.value) || 0,
+                              },
                             })
                           }
-                          placeholder="0.00"
-                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/90 placeholder-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                          placeholder="0.00 (use 0 for free)"
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/90 placeholder-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all duration-300"
                         />
                       </div>
                     </div>

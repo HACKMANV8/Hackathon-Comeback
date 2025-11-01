@@ -16,7 +16,7 @@ export interface ServerResponse {
     count: number;
     names: string[];
   };
-  pricing?: {
+  pricing: {
     currency: string;
     amount: number;
   };
@@ -95,3 +95,44 @@ export async function fetchServerByName(
   return servers.find((s) => s.name === name) || null;
 }
 
+export interface CreateServerRequest {
+  name: string;
+  version: string;
+  description: string;
+  author: string;
+  lang: string;
+  license: string;
+  entrypoint: string;
+  repository: {
+    type: string;
+    url: string;
+  };
+  pricing: {
+    currency: string;
+    amount: number;
+  };
+  metadata?: {
+    tags?: string[];
+    homepage?: string;
+  };
+}
+
+export async function createServer(
+  data: CreateServerRequest,
+): Promise<{ success: boolean; message: string; server?: ServerResponse }> {
+  const response = await fetch(`${API_URL}/servers`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.detail || "Failed to create server");
+  }
+
+  return result;
+}

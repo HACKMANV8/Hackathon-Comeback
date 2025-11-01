@@ -9,12 +9,12 @@ interface ToolCardProps {
     name: string;
     author: string;
     description: string;
-    lang: string;
-    license: string;
-    pricing?: {
-      currency: string;
-      amount: number;
-    };
+  lang: string;
+  license: string;
+  pricing: {
+    currency: string;
+    amount: number;
+  };
   };
 }
 

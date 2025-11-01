@@ -4,6 +4,7 @@ import Header from "@/components/header";
 import PublishServerModal, {
   ServerFormData,
 } from "@/components/publish-server-modal";
+import { createServer } from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import { ExternalLink, Eye, Plus, Settings, Trash2 } from "lucide-react";
@@ -68,9 +69,26 @@ const dummyUserServers = [
 export default function MyServersPage() {
   const { user, isLoaded } = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handlePublishServer = (data: ServerFormData) => {
-    alert(`Server "${data.name}" published successfully!`);
+  const handlePublishServer = async (data: ServerFormData) => {
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const result = await createServer(data);
+      alert(`Server "${data.name}" published successfully!`);
+      // Optionally, refresh the server list here or redirect
+      window.location.reload();
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to publish server";
+      setError(errorMessage);
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isLoaded) {
